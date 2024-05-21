@@ -3,7 +3,7 @@ import numpy as np
 from sympy import *
 
 
-def equation_determined(equation_string: str) -> Tuple(str, str):
+def equation_determined(equation_string: str) -> (str, str):
     """
     Функция разбирает строку на константы, случайным образом присваивает им значения,
     пока не получится решаемое уравнение. Возвращает уравнение и его решение.
@@ -232,3 +232,7 @@ def quadratic_equation_12457():
     equation_string = '(C1*x+C2)**2+C3=C4+C5*x**2'
     task, answer = equation_determined(equation_string)
     return task, answer
+
+
+if __name__ == "__main__":
+    print(quadratic_equation_12457())
