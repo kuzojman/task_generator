@@ -41,7 +41,10 @@ def simple_quadratic_equation():
     """
     equation_string = 'C1*x**2+C2*x+C3=0'
     task, answer = equation_determined(equation_string)
-    return task, answer
+    return {
+        "condition": task,
+        "answer": answer
+    }
 
 
 def quadratic_equation_2199():
@@ -51,7 +54,10 @@ def quadratic_equation_2199():
     """
     equation_string = '(C1*x+C2)*(C3*x+C4)=(C5*x+C6)**2'
     task, answer = equation_determined(equation_string)
-    return task, answer
+    return {
+        "condition": task,
+        "answer": answer
+    }
 
 
 def quadratic_equation_2201():
@@ -61,7 +67,10 @@ def quadratic_equation_2201():
     """
     equation_string = '(C1*x+C2)**2+(C3*x+C4)*(C5*x+C6)=0'
     task, answer = equation_determined(equation_string)
-    return task, answer
+    return {
+        "condition": task,
+        "answer": answer
+    }
 
 
 def quadratic_equation_2203():
@@ -71,7 +80,10 @@ def quadratic_equation_2203():
     """
     equation_string = '(C1*x+C2)/(C3*x+C4)=(C5*x+C6)/(C7*x+C8)'
     task, answer = equation_determined(equation_string)
-    return task, answer
+    return {
+        "condition": task,
+        "answer": answer
+    }
 
 
 def quadratic_equation_2206():
@@ -81,7 +93,10 @@ def quadratic_equation_2206():
     """
     equation_string = '(C1*x+C2)/(C3*x+C4)+(C5*x+C6)/(C7*x+C8)=C9'
     task, answer = equation_determined(equation_string)
-    return task, answer
+    return {
+        "condition": task,
+        "answer": answer
+    }
 
 
 def quadratic_equation_2259():
@@ -91,7 +106,10 @@ def quadratic_equation_2259():
     """
     equation_string = 'C1*x*(C2*x+C3)=C4*x+C5'
     task, answer = equation_determined(equation_string)
-    return task, answer
+    return {
+        "condition": task,
+        "answer": answer
+    }
 
 
 def quadratic_equation_2287():
@@ -101,7 +119,10 @@ def quadratic_equation_2287():
     """
     equation_string = '(C1*x+C2)**2+C3*x*(C4*x+C5)=C6'
     task, answer = equation_determined(equation_string)
-    return task, answer
+    return {
+        "condition": task,
+        "answer": answer
+    }
 
 
 def quadratic_equation_2264():
@@ -111,7 +132,10 @@ def quadratic_equation_2264():
     """
     equation_string = '(C1*x+C2)*(C3*x+C4)+C5=C6*x*(C7+C8*x)'
     task, answer = equation_determined(equation_string)
-    return task, answer
+    return {
+        "condition": task,
+        "answer": answer
+    }
 
 
 def quadratic_equation_2266():
@@ -121,7 +145,10 @@ def quadratic_equation_2266():
     """
     equation_string = '(C1*x+C2)*(C3*x+C4)=C5*x*(C6*x+C7)'
     task, answer = equation_determined(equation_string)
-    return task, answer
+    return {
+        "condition": task,
+        "answer": answer
+    }
 
 
 def quadratic_equation_2295():
@@ -131,7 +158,10 @@ def quadratic_equation_2295():
     """
     equation_string = '((C1*x**2+C2)/C3)-C4*x=C5'
     task, answer = equation_determined(equation_string)
-    return task, answer
+    return {
+        "condition": task,
+        "answer": answer
+    }
 
 
 def quadratic_equation_2317():
@@ -141,7 +171,10 @@ def quadratic_equation_2317():
     """
     equation_string = 'C1*x+C2/x=C3'
     task, answer = equation_determined(equation_string)
-    return task, answer
+    return {
+        "condition": task,
+        "answer": answer
+    }
 
 
 def quadratic_equation_2320():
@@ -151,7 +184,10 @@ def quadratic_equation_2320():
     """
     equation_string = '(C1*x**2+C2)/(C3*x**2+C4)=C5'
     task, answer = equation_determined(equation_string)
-    return task, answer
+    return {
+        "condition": task,
+        "answer": answer
+    }
 
 
 def quadratic_equation_2333():
@@ -161,7 +197,10 @@ def quadratic_equation_2333():
     """
     equation_string = '(C1*x+C2)**2+C3*(C4*x+C5)**2=0'
     task, answer = equation_determined(equation_string)
-    return task, answer
+    return {
+        "condition": task,
+        "answer": answer
+    }
 
 
 def quadratic_equation_6036():
@@ -171,7 +210,10 @@ def quadratic_equation_6036():
     """
     equation_string = '(C1*x**2+C2*x)/C3+C4*(C5*x**2+C6*x)/C7=0'
     task, answer = equation_determined(equation_string)
-    return task, answer
+    return {
+        "condition": task,
+        "answer": answer
+    }
 
 
 def quadratic_equation_6159():
@@ -181,7 +223,10 @@ def quadratic_equation_6159():
     """
     equation_string = '(C1*x+C2)*(C3*x+C4)+C5*x*(C6*x+C7)=C8*x*(C9*x+C10)'
     task, answer = equation_determined(equation_string)
-    return task, answer
+    return {
+        "condition": task,
+        "answer": answer
+    }
 
 
 def quadratic_equation_6169():
@@ -191,7 +236,10 @@ def quadratic_equation_6169():
     """
     equation_string = '(C1*x**2+C2*x)/C3=(C4*x+C5)/C6'
     task, answer = equation_determined(equation_string)
-    return task, answer
+    return {
+        "condition": task,
+        "answer": answer
+    }
 
 
 def quadratic_equation_6170():
@@ -201,7 +249,10 @@ def quadratic_equation_6170():
     """
     equation_string = '(C1*x**2+C2*x)/C3+(C4*x+C5)/C6=(C7*x**2+C8)/C9'
     task, answer = equation_determined(equation_string)
-    return task, answer
+    return {
+        "condition": task,
+        "answer": answer
+    }
 
 
 def quadratic_equation_6207():
@@ -211,7 +262,10 @@ def quadratic_equation_6207():
     """
     equation_string = '(C1*x**2+C2*x+C3)**2=(C4*x**2+C5*x+C6)**2'
     task, answer = equation_determined(equation_string)
-    return task, answer
+    return {
+        "condition": task,
+        "answer": answer
+    }
 
 
 def quadratic_equation_12456():
@@ -221,7 +275,10 @@ def quadratic_equation_12456():
     """
     equation_string = '(C1*x+C2)*(C3*x+C4)+C5*x*(C6+C7*x)=C8'
     task, answer = equation_determined(equation_string)
-    return task, answer
+    return {
+        "condition": task,
+        "answer": answer
+    }
 
 
 def quadratic_equation_12457():
@@ -231,7 +288,10 @@ def quadratic_equation_12457():
     """
     equation_string = '(C1*x+C2)**2+C3=C4+C5*x**2'
     task, answer = equation_determined(equation_string)
-    return task, answer
+    return {
+        "condition": task,
+        "answer": answer
+    }
 
 
 if __name__ == "__main__":
