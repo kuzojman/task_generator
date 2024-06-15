@@ -21,13 +21,19 @@ def task_27953():
     while True:
         material = list(pair.keys())[0]
         coefficient = template.replace("k", str(list(pair.values())[0]))
-        l0 = round(random.uniform(1, 10), 1)
+        l0 = round(random.uniform(1, 30), 1)
+        if l0 % 1 == 0:
+            l0 = int(l0)
         delta_l = round(random.uniform(1, 50), 1) * (10 ** -3)
+        if delta_l % 1 == 0:
+            delta_l = int(delta_l)
         alpha = list(pair.values())[0] * (10 ** -6)
         answer = delta_l / (l0 * alpha)
-        if len(str(answer % 1)) < 4:
-            if answer % 1 == 0:
-                answer = int(answer)
+        if len(str(answer)) < 6:
+            spl_answer = str(answer).split(".")
+            if len(spl_answer[0]) < 3:
+                if answer % 1 == 0:
+                    answer = int(answer)
                 break
     task = (fr"При температуре $0$ $C^\circ$ {material} имеет длину {round(l0, 1)} м. "
             "При возрастании температуры происходит тепловое расширение материала, "
@@ -57,15 +63,16 @@ def task_1():
         a = list(pair.values())[0][0] * (10 ** -3)
         answer = (rt - r20) / (r20 * a) + 20
         if len(str(answer)) < 50:
-            answer = round(float(answer), 2)
-            if len(str(answer)) < 7:
+            answer = round(answer, 2)
+            spl_answer = str(answer).split(".")
+            if len(spl_answer[0]) < 3:
                 break
     task = (r"Зависимость сопротивления $R_t$ проводника от температуры t описывается формулой: "
             r"$$R(t) = R_{20} \times (1 + \alpha \times (t - 20))$$, где t - температура в "
             r"градусах цельсия, $R_{20} $ – сопротивление проводника при 20°С, $\alpha$ - "
             "температурный коэффициент сопротивления. При какой температуре "
             rf"{list(pair.keys())[0]} будет иметь сопротивление, равное "
-            rf"${rt * (10 ** 8)}\cdot 10 ^{{-8}}$ ом-м, "
+            rf"${round(rt * (10 ** 8), 3)}\cdot 10 ^{{-8}}$ ом-м, "
             f"если {template_1.replace('k1', str(list(pair.values())[0][1]))} ом-м, "
             f"{template.replace('k', str(list(pair.values())[0][0]))}. "
             "Ответ округлите до двух знаков после запятой.")
