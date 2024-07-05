@@ -1,3 +1,4 @@
+import pymorphy3
 import pymorphy3 as pymorphy2
 import json
 from sympy import Eq, symbols, solve
@@ -23,6 +24,26 @@ def choosing_declension_form(word, case='gent'):
     for i in list_words:
       list_morphy.append(morph.parse(i)[0].inflect({case}).word)
     return ' '.join(list_morphy)
+
+
+def xchoosing_declension_form(text, target_case='gent'):
+    morph = pymorphy2.MorphAnalyzer()
+    words = text.split()
+    changed_words = []
+    case = 0
+    for word in words:
+        if word[0].isupper():
+            case = 1
+        parsed_word = morph.parse(word)[0]
+        try:
+            changed_word = parsed_word.inflect({target_case}).word
+        except AttributeError:
+            changed_word = word  # Если не удается изменить падеж, оставляем слово без изменений
+        if case:
+            changed_word = changed_word.title()
+        changed_words.append(changed_word)
+
+    return ' '.join(changed_words)
 
 def capitalize_word(word):
   '''Функция напишет слово с заглавной буквы, если передается фраза,
