@@ -1,10 +1,7 @@
 import random
 import numpy as np
 from fractions import Fraction
-from text_tasks.utils import generate_context, find_genus_object, capitalize_word, xchoosing_declension_form
-
-def choosing_declension_form(*args):
-    return xchoosing_declension_form(*args)
+from text_tasks.utils import generate_context, find_genus_object, capitalize_word, choosing_declension_form
 
 
 def xround(num):
@@ -228,8 +225,8 @@ def task_3881():
         time_meet = Fraction(1, Fraction(1, time_boat) + Fraction(1, time_raft))
         if time_meet.denominator == 1:
             break
-    task = (f'Из {xchoosing_declension_form(dest_a)} в {dest_b} по реке отплыл {raft}. Одновременно с ним из '
-            f'{xchoosing_declension_form(dest_b)} в {dest_a} вышел {vehicle}. '
+    task = (f'Из {choosing_declension_form(dest_a)} в {dest_b} по реке отплыл {raft}. Одновременно с ним из '
+            f'{choosing_declension_form(dest_b)} в {dest_a} вышел {vehicle}. '
             f'Через сколько часов после выхода {vehicle} встретил {raft}, если {vehicle} прошел все расстояние между '
             f'A и B за {time_boat} ч, а {raft} – за {time_raft} ч?')
     return {
@@ -277,7 +274,7 @@ def task_3886():
     s_all = xround(boat_vel * time_meet)
     task = (f'{capitalize_word(raft)} и {vehicle} движутся навстречу друг другу по реке. Они находятся на расстоянии '
             f'{s_all} км друг друга. Через какое время они встретятся, если собственная скорость '
-            f'{vehicle} равна {boat_vel} км/ч, а скорость {xchoosing_declension_form(raft)} равна {raft_vel} км/ч?')
+            f'{vehicle} равна {boat_vel} км/ч, а скорость {choosing_declension_form(raft)} равна {raft_vel} км/ч?')
     return {
         "condition": task,
         "answer": time_meet
@@ -300,10 +297,10 @@ def task_3888():
         if result_fraction.numerator == 1:
             boat_time2 = result_fraction.denominator
             break
-    task = (f'{capitalize_word(raft)} проплывает путь от {xchoosing_declension_form(dest_a)} до '
-            f'{xchoosing_declension_form(dest_b)} за {raft_time} ч, а {vehicle} – за {boat_time} ч. '
-            f'За сколько часов проплывет {vehicle} путь от {xchoosing_declension_form(dest_b)} до '
-            f'{xchoosing_declension_form(dest_a)}?')
+    task = (f'{capitalize_word(raft)} проплывает путь от {choosing_declension_form(dest_a)} до '
+            f'{choosing_declension_form(dest_b)} за {raft_time} ч, а {vehicle} – за {boat_time} ч. '
+            f'За сколько часов проплывет {vehicle} путь от {choosing_declension_form(dest_b)} до '
+            f'{choosing_declension_form(dest_a)}?')
     return {
         "condition": task,
         "answer": boat_time2
@@ -323,9 +320,9 @@ def task_3889():
         result = Fraction(1, time1) - Fraction(1, time2)
         if result.numerator == 1:
             break
-    task = (f'{capitalize_word(vehicle)} проплывает одинаковое расстояние по {xchoosing_declension_form(water)} за '
+    task = (f'{capitalize_word(vehicle)} проплывает одинаковое расстояние по {choosing_declension_form(water)} за '
             f'{time2} ч, а по течению реки – за {time1} ч. Сколько времени потребуется '
-            f'{xchoosing_declension_form(raft, "datv")}, '
+            f'{choosing_declension_form(raft, "datv")}, '
             f'чтобы проплыть такое же расстояние по этой реке?')
     return {
         "condition": task,
@@ -418,7 +415,7 @@ def task_3912():
         if result.numerator == 1:
             break
     task = (f'{capitalize_word(vehicle)} {"проплыл" if find_genus_object(vehicle) == 1 else "проплыла"} некоторое '
-            f'расстояние по {xchoosing_declension_form(water, "datv")} за {time1} ч. Такое же расстояние {raft} проплывает по '
+            f'расстояние по {choosing_declension_form(water, "datv")} за {time1} ч. Такое же расстояние {raft} проплывает по '
             f'реке за {time2} ч. Сколько времени затратит {vehicle} на тот же путь против течения реки?')
     return {
         "condition": task,
@@ -441,10 +438,10 @@ def task_6472():
         s = (boat_vel + water_vel) * (time1 + time2)
         if s < 100:
             break
-    task = (f'{capitalize_word(actor)} проплыл на {xchoosing_declension_form(vehicle, "loct")} {boat_vel * time1} '
-            f'км по {xchoosing_declension_form(water, "datv")} и {(boat_vel - water_vel) * time2} км против '
+    task = (f'{capitalize_word(actor)} проплыл на {choosing_declension_form(vehicle, "loct")} {boat_vel * time1} '
+            f'км по {choosing_declension_form(water, "datv")} и {(boat_vel - water_vel) * time2} км против '
             f'течения реки за то же время, какое понадобилось чтобы проплыть по течению {s} км. '
-            f'С какой скоростью плыл {actor} по {xchoosing_declension_form(water, "datv")}, если скорость '
+            f'С какой скоростью плыл {actor} по {choosing_declension_form(water, "datv")}, если скорость '
             f'течения реки равна {water_vel} км/ч?')
     return {
         "condition": task,
@@ -492,8 +489,8 @@ def task_6476():
     if time1 > time2:
         flag_time = 1
     task = (f'{capitalize_word(vehicle)} {"прошёл" if find_genus_object(vehicle) == 1 else "прошла"} {s1} км '
-            f'против течения реки и {s2} км по {xchoosing_declension_form(water, "datv")}, затратив на путь '
-            f'по {xchoosing_declension_form(water, "datv")} на {xround(abs(time1 - time2))} ч '
+            f'против течения реки и {s2} км по {choosing_declension_form(water, "datv")}, затратив на путь '
+            f'по {choosing_declension_form(water, "datv")} на {xround(abs(time1 - time2))} ч '
             f'{"меньше" if flag_time else "больше"}, чем на путь по реке. Скорость течения реки равна {water_vel} '
             f'км/ч. Найдите скорость хода {choosing_declension_form(vehicle)} против течения.')
     return {
@@ -560,13 +557,13 @@ def task_7764():
             if raft_time1 < 100:
                 break
 
-    task = (f'Из {xchoosing_declension_form(dest_a)} и {xchoosing_declension_form(dest_b)} одновременно навстречу друг '
+    task = (f'Из {choosing_declension_form(dest_a)} и {choosing_declension_form(dest_b)} одновременно навстречу друг '
             f'другу вышли {raft} и {vehicle}. {capitalize_word(vehicle)} '
             f'{"встретил" if find_genus_object(vehicle) == 1 else "встретила"} {raft} через {boat_time // 60} ч. после '
             f'выхода, а еще через {raft_time} мин. '
             f'{"прибыл" if find_genus_object(vehicle) == 1 else "прибыла"} {raft} в пункт '
             f'B. Сколько времени {"плыл" if find_genus_object(raft) == 1 else "плыла" if find_genus_object(raft) == 2 
-            else "плыло"} {raft} из {xchoosing_declension_form(dest_b)} в {dest_a}?')
+            else "плыло"} {raft} из {choosing_declension_form(dest_b)} в {dest_a}?')
     return {
         "condition": task,
         "answer": raft_time1
@@ -663,7 +660,7 @@ def task_7784():
     t1 = xround(space / boat_vel)
     t2 = xround(space / water_vel)
     task = (f'{capitalize_word(vehicle)} {"проплыл" if find_genus_object(vehicle) == 1 else "проплыла"} некоторое '
-            f'расстояние по {xchoosing_declension_form(water, "datv")} за {t1} ч. Такое же расстояние плот '
+            f'расстояние по {choosing_declension_form(water, "datv")} за {t1} ч. Такое же расстояние плот '
             f'проплывает по реке за {t2} ч. Сколько времени '
             f'затратит {vehicle} на тот же путь по течению реки?')
     return {
@@ -739,7 +736,7 @@ def task_8611():
     time2 = space // (boat_vel - water_vel)
     task = (f'{capitalize_word(vehicle)} {"прошёл" if find_genus_object(vehicle) == 1 else "прошла"} {space} км '
             f'за {time1} ч по течению реки, а против течения реки - за {time2} ч, За сколько времени проплывет '
-            f'это же расстояние {vehicle} по {xchoosing_declension_form(water, "datv")}?')
+            f'это же расстояние {vehicle} по {choosing_declension_form(water, "datv")}?')
     return {
         "condition": task,
         "answer": f'{space // boat_vel}'
@@ -887,13 +884,13 @@ def task_12774():
                       (0.5 if time_stop else 1))
         if isinstance(time, int) and time < 30:
             break
-    task = (f'{capitalize_word(vehicle)} отправился от {xchoosing_declension_form(dest_a)} к '
-            f'{xchoosing_declension_form(dest_b, "datv")} вниз по течению реки. После '
+    task = (f'{capitalize_word(vehicle)} отправился от {choosing_declension_form(dest_a)} к '
+            f'{choosing_declension_form(dest_b, "datv")} вниз по течению реки. После '
             f'{"получасовой" if time_stop else "часовой"} стоянки в B он отправился обратно и через {time} ч '
             f'после отплытия из А вернулся к той же пристани. Какова собственная скорость '
             f'{choosing_declension_form(vehicle)}, если расстояние между '
-            f'{xchoosing_declension_form(dest_a, "ablt")} и '
-            f'{xchoosing_declension_form(dest_b, "ablt")} равно {space} км, '
+            f'{choosing_declension_form(dest_a, "ablt")} и '
+            f'{choosing_declension_form(dest_b, "ablt")} равно {space} км, '
             f'а скорость течения реки равна {water_vel} км/ч?')
     return {
         "condition": task,

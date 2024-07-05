@@ -12,9 +12,11 @@ def generate_context(file_json, category):
   with open(file_json, 'r', encoding='utf8') as my_file:
     return json.load(my_file)[category]
 
+
+'''Старая функция для склонения
 def choosing_declension_form(word, case='gent'):
-  '''Функция подбирает правильную форму склонения переданного слова, см. https://opencorpora.org/dict.php?act=gram,
-  по умолчанию слово пропишется в родительном падеже'''
+  Функция подбирает правильную форму склонения переданного слова, см. https://opencorpora.org/dict.php?act=gram,
+  по умолчанию слово пропишется в родительном падеже
   morph = pymorphy2.MorphAnalyzer()
   if len(word.split()) < 2:
     return morph.parse(word)[0].inflect({case}).word
@@ -23,15 +25,17 @@ def choosing_declension_form(word, case='gent'):
     list_morphy = []
     for i in list_words:
       list_morphy.append(morph.parse(i)[0].inflect({case}).word)
-    return ' '.join(list_morphy)
+    return ' '.join(list_morphy)'''
 
 
-def xchoosing_declension_form(text, target_case='gent'):
+def choosing_declension_form(text, target_case='gent'):
+    '''Функция подбирает правильную форму склонения переданного слова, см. https://opencorpora.org/dict.php?act=gram,
+    по умолчанию слово пропишется в родительном падеже'''
     morph = pymorphy2.MorphAnalyzer()
     words = text.split()
     changed_words = []
-    case = 0
     for word in words:
+        case = 0
         if word[0].isupper():
             case = 1
         parsed_word = morph.parse(word)[0]
