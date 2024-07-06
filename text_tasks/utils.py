@@ -1,4 +1,5 @@
-import pymorphy2
+import pymorphy3
+import pymorphy3 as pymorphy2
 import json
 from sympy import Eq, symbols, solve
 import re
@@ -9,13 +10,13 @@ def generate_context(file_json, category):
   '''Функция из файла-json возвращает список возможных вариантов сюжета для задачи,
   необходимо передать файл-json и требуемую категорию. Возвращает список'''
   with open(file_json, 'r', encoding='utf8') as my_file:
-    templates = my_file.read()
-    context = json.loads(templates)
-  return context[category]
+    return json.load(my_file)[category]
 
+
+'''Старая функция для склонения
 def choosing_declension_form(word, case='gent'):
-  '''Функция подбирает правильную форму склонения переданного слова, см. https://opencorpora.org/dict.php?act=gram,
-  по умолчанию слово пропишется в родительном падеже'''
+  Функция подбирает правильную форму склонения переданного слова, см. https://opencorpora.org/dict.php?act=gram,
+  по умолчанию слово пропишется в родительном падеже
   morph = pymorphy2.MorphAnalyzer()
   if len(word.split()) < 2:
     return morph.parse(word)[0].inflect({case}).word
@@ -24,7 +25,29 @@ def choosing_declension_form(word, case='gent'):
     list_morphy = []
     for i in list_words:
       list_morphy.append(morph.parse(i)[0].inflect({case}).word)
-    return ' '.join(list_morphy)
+    return ' '.join(list_morphy)'''
+
+
+def choosing_declension_form(text, target_case='gent'):
+    '''Функция подбирает правильную форму склонения переданного слова, см. https://opencorpora.org/dict.php?act=gram,
+    по умолчанию слово пропишется в родительном падеже'''
+    morph = pymorphy2.MorphAnalyzer()
+    words = text.split()
+    changed_words = []
+    for word in words:
+        case = 0
+        if word[0].isupper():
+            case = 1
+        parsed_word = morph.parse(word)[0]
+        try:
+            changed_word = parsed_word.inflect({target_case}).word
+        except AttributeError:
+            changed_word = word  # Если не удается изменить падеж, оставляем слово без изменений
+        if case:
+            changed_word = changed_word.title()
+        changed_words.append(changed_word)
+
+    return ' '.join(changed_words)
 
 def capitalize_word(word):
   '''Функция напишет слово с заглавной буквы, если передается фраза,
