@@ -1,4 +1,3 @@
-import pymorphy3
 import pymorphy3 as pymorphy2
 import json
 from sympy import Eq, symbols, solve

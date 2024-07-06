@@ -1,5 +1,5 @@
 Flask
 numpy
-pymorphy2
+pymorphy3
 sympy
 pytexit==0.4.0
