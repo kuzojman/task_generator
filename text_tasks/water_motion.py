@@ -41,7 +41,7 @@ def task_14():
     Расстояние между двумя пристанями равно 12,3 км. За сколько времени моторная лодка проплывет путь от одной пристани
     до другой и обратно, если собственная скорость лодки 7,2 км/ч, а скорость течения реки составляет 1/6
     скорости лодки?"""
-    vehicle = random.sample(generate_context('./motion/context.json', 'vehicle'), 1)[0]
+    vehicle = random.sample(generate_context('./text_tasks/context.json', 'vehicle'), 1)[0]
     while True:
         water_vel_divider = random.randint(2, 6)
         water_vel = random.randint(10, 50)
@@ -65,9 +65,9 @@ def task_38():
     """Генерация аналогичных задач № 38 с портала https://kuzovkin.info/one_exercise_1/38
     Лодка проплыла некоторое расстояние по озеру за 5 ч. Такое же расстояние плот проплывает по реке за 20 ч.
     Сколько времени затратит лодка на тот же путь по течению реки?"""
-    vehicle = random.sample(generate_context('./motion/context.json', 'vehicle'), 1)[0]
-    raft = random.sample(generate_context('./motion/context.json', 'raft'), 1)[0]
-    water = random.sample(generate_context('./motion/context.json', 'water'), 1)[0]
+    vehicle = random.sample(generate_context('./text_tasks/context.json', 'vehicle'), 1)[0]
+    raft = random.sample(generate_context('./text_tasks/context.json', 'raft'), 1)[0]
+    water = random.sample(generate_context('./text_tasks/context.json', 'water'), 1)[0]
     while True:
         raft_time = random.randint(20, 80)
         boat_time = random.randint(1, 8)
@@ -89,7 +89,7 @@ def task_45():
     """Генерация аналогичных задач № 45 с портала https://kuzovkin.info/one_exercise_1/45
     Собственная скорость катера равна 14,7 км, а его скорость против течения реки 10,2 км/ч.
     Какое расстояние проплывет катер, если будет двигаться 2 ч по течению реки и 4,5 ч против течения?"""
-    vehicle = random.sample(generate_context('./motion/context.json', 'vehicle'), 1)[0]
+    vehicle = random.sample(generate_context('./text_tasks/context.json', 'vehicle'), 1)[0]
     while True:
         water_vel = xround(random.randint(10, 50) * 0.1)
         boat_vel = xround(random.randint(100, 200) * 0.1)
@@ -112,7 +112,7 @@ def task_2598():
     Моторная лодка прошла 54 км по течению реки и 42 км против течения за то же время, что
     она проходит 96 км в стоячей воде. Найдите скорость лодки в стоячей воде, если
     скорость течения реки равна 3 км/ч."""
-    vehicle = random.sample(generate_context('./motion/context.json', 'vehicle'), 1)[0]
+    vehicle = random.sample(generate_context('./text_tasks/context.json', 'vehicle'), 1)[0]
     water_vel = random.randint(2, 8)
     boat_vel = random.randint(15, 45)
     time = random.randint(2, 5)
@@ -134,8 +134,8 @@ def task_2602():
     """Генерация аналогичных задач № 2602 с портала https://kuzovkin.info/one_exercise_1/2602
     Моторная лодка прошла по течению реки расстояние 6 км, затем по озеру 10 км, затратив на весь путь 1 ч.
     С какой скоростью она шла по озеру, если скорость течения реки равна 3 км/ч?"""
-    vehicle = random.sample(generate_context('./motion/context.json', 'vehicle'), 1)[0]
-    water = random.sample(generate_context('./motion/context.json', 'water'), 1)[0]
+    vehicle = random.sample(generate_context('./text_tasks/context.json', 'vehicle'), 1)[0]
+    water = random.sample(generate_context('./text_tasks/context.json', 'water'), 1)[0]
     while True:
         water_vel = random.randint(2, 8)
         boat_vel = random.randint(water_vel + 2, 30)
@@ -161,9 +161,9 @@ def task_2604():
     Турист проплыл на байдарке 15 км против течения реки и 14 км по течению, затратив на все путешествие столько же
     времени, сколько ему понадобилось бы, чтобы проплыть по озеру 30 км. Зная, что скорость течения реки равна 1 км/ч,
     найдите скорость движения туриста по озеру."""
-    actor = random.sample(generate_context('./motion/context.json', 'actor'), 1)[0]
-    vehicle = random.sample(generate_context('./motion/context.json', 'vehicle'), 1)[0]
-    water =  random.sample(generate_context('./motion/context.json', 'water'), 1)[0]
+    actor = random.sample(generate_context('./text_tasks/context.json', 'actor'), 1)[0]
+    vehicle = random.sample(generate_context('./text_tasks/context.json', 'vehicle'), 1)[0]
+    water =  random.sample(generate_context('./text_tasks/context.json', 'water'), 1)[0]
     water_vel = random.randint(1, 6)
     boat_vel = random.randint(water_vel+1, 15)
     time1 = random.randint(1, 3)
@@ -187,7 +187,7 @@ def task_2606():
     """Генерация аналогичных задач № 2606 с портала https://kuzovkin.info/one_exercise_1/2606
     Моторная лодка прошла 7 км по течению реки и 10 км против течения, затратив на путь по течению на 0,5 ч меньше,
     чем на путь против течения. Собственная скорость лодки равна 12 км/ч. Найдите скорость хода лодки против течения."""
-    vehicle = random.sample(generate_context('./motion/context.json', 'vehicle'), 1)[0]
+    vehicle = random.sample(generate_context('./text_tasks/context.json', 'vehicle'), 1)[0]
     water_vel = random.randint(1, 6)
     boat_vel = random.randint(water_vel+1, 15)
     while True:
@@ -216,9 +216,9 @@ def task_3881():
     Из пункта A в пункт B по реке отплыл плот. Одновременно с ним из пункта B в пункт A вышел катер.
     Через сколько часов после выхода катер встретил плот, если катер прошел все расстояние между A и B за 15 ч,
     а плот – за 60 ч?"""
-    vehicle = random.sample(generate_context('./motion/context.json', 'vehicle'), 1)[0]
-    raft = random.sample(generate_context('./motion/context.json', 'raft'), 1)[0]
-    dest_a, dest_b = random.sample(generate_context('./motion/context.json', 'destination'), 1)[0]
+    vehicle = random.sample(generate_context('./text_tasks/context.json', 'vehicle'), 1)[0]
+    raft = random.sample(generate_context('./text_tasks/context.json', 'raft'), 1)[0]
+    dest_a, dest_b = random.sample(generate_context('./text_tasks/context.json', 'destination'), 1)[0]
     while True:
         time_raft = random.randint(15, 60)
         time_boat = random.randint(1, 14)
@@ -266,8 +266,8 @@ def task_3886():
     Плот и лодка движутся навстречу друг другу по реке. Они находятся на расстоянии 20 км друг другу по реке.
     Они находятся на расстоянии 20 км друг от друга. Через какое время они встретятся, если собственная скорость
     лодки 8 км/ч, а скорость течения реки 2 км/ч?"""
-    vehicle = random.sample(generate_context('./motion/context.json', 'vehicle'), 1)[0]
-    raft = random.sample(generate_context('./motion/context.json', 'raft'), 1)[0]
+    vehicle = random.sample(generate_context('./text_tasks/context.json', 'vehicle'), 1)[0]
+    raft = random.sample(generate_context('./text_tasks/context.json', 'raft'), 1)[0]
     raft_vel = random.randint(2, 10)
     boat_vel = random.randint(raft_vel + 3, 30)
     time_meet = xround(random.randint(11, 30) * 0.1)
@@ -287,9 +287,9 @@ def task_3888():
     Аналогична задаче № 3897 с портала https://kuzovkin.info/one_exercise_1/3897
     Плот проплывает путь от A до B за 30 ч, а катер – за 5 ч. За сколько часов проплывет катер путь от B до A ?"""
     # на 10000 проходов функции среднее количество циклов менее 25
-    vehicle = random.sample(generate_context('./motion/context.json', 'vehicle'), 1)[0]
-    raft = random.sample(generate_context('./motion/context.json', 'raft'), 1)[0]
-    dest_a, dest_b = random.sample(generate_context('./motion/context.json', 'destination'), 1)[0]
+    vehicle = random.sample(generate_context('./text_tasks/context.json', 'vehicle'), 1)[0]
+    raft = random.sample(generate_context('./text_tasks/context.json', 'raft'), 1)[0]
+    dest_a, dest_b = random.sample(generate_context('./text_tasks/context.json', 'destination'), 1)[0]
     while True:
         raft_time = random.randint(20, 80)
         boat_time = random.randint(1, 8)
@@ -311,9 +311,9 @@ def task_3889():
     """Генерация аналогичных задач № 3889 с портала https://kuzovkin.info/one_exercise_1/3889
     Катер проплывает одинаковое расстояние по озеру за 7 ч, а по течению реки – за 6 ч. Сколько времени потребуется
     плоту, чтобы проплыть такое же расстояние по этой реке?"""
-    vehicle = random.sample(generate_context('./motion/context.json', 'vehicle'), 1)[0]
-    raft = random.sample(generate_context('./motion/context.json', 'raft'), 1)[0]
-    water = random.sample(generate_context('./motion/context.json', 'water'), 1)[0]
+    vehicle = random.sample(generate_context('./text_tasks/context.json', 'vehicle'), 1)[0]
+    raft = random.sample(generate_context('./text_tasks/context.json', 'raft'), 1)[0]
+    water = random.sample(generate_context('./text_tasks/context.json', 'water'), 1)[0]
     while True:
         time1 = random.randint(2, 8)
         time2 = random.randint(time1, 15)
@@ -346,7 +346,7 @@ def task_3900():
     Аналогична задаче № 10191 с портала https://kuzovkin.info/one_exercise_1/10191
     Моторная лодка прошла 80 км по течению реки за 4 ч, а против течения реки – за 5 ч. За сколько времени проплывет
     это же расстояние плот по реке?"""
-    vehicle = random.sample(generate_context('./motion/context.json', 'vehicle'), 1)[0]
+    vehicle = random.sample(generate_context('./text_tasks/context.json', 'vehicle'), 1)[0]
     boat_vel, water_vel = _init_values()
     while True:
         rnd = random.randint(1, 5) * 0.5
@@ -377,7 +377,7 @@ def task_3908():
     Аналогична задаче № 10194 с портала https://kuzovkin.info/one_exercise_1/10194
     Лодка может пройти расстояние между двумя пристанями за 1 ч 36 мин против течения реки и за 1 ч 20 мин по
     течению реки. Скорость течения реки 1,5 км/ч. Найдите расстояние между пристанями."""
-    vehicle = random.sample(generate_context('./motion/context.json', 'vehicle'), 1)[0]
+    vehicle = random.sample(generate_context('./text_tasks/context.json', 'vehicle'), 1)[0]
     while True:
         water_vel = random.randint(10, 50)
         boat_vel = random.randint(water_vel + 10, 200)
@@ -405,9 +405,9 @@ def task_3912():
     """Генерация аналогичных задач № 3912 с портала https://kuzovkin.info/one_exercise_1/3912
     Лодка проплыла некоторое расстояние по озеру за 5 ч. Такое же расстояние плот проплывает по реке за 20 ч.
     Сколько времени затратит лодка на тот же путь против течения реки?"""
-    vehicle = random.sample(generate_context('./motion/context.json', 'vehicle'), 1)[0]
-    raft = random.sample(generate_context('./motion/context.json', 'raft'), 1)[0]
-    water = random.sample(generate_context('./motion/context.json', 'water'), 1)[0]
+    vehicle = random.sample(generate_context('./text_tasks/context.json', 'vehicle'), 1)[0]
+    raft = random.sample(generate_context('./text_tasks/context.json', 'raft'), 1)[0]
+    water = random.sample(generate_context('./text_tasks/context.json', 'water'), 1)[0]
     while True:
         time1 = random.randint(2, 8)
         time2 = random.randint(time1, 40)
@@ -427,9 +427,9 @@ def task_6472():
     """Генерация аналогичных задач № 6472 с портала https://kuzovkin.info/one_exercise_1/6472
     Турист проплыл на байдарке 24 км по озеру и 9 км против течения реки за то же время, какое понадобилось ему,
     чтобы проплыть по течению 45 км. С какой скоростью плыл турист по озеру, если скорость течения реки равна 2 км/ч?"""
-    vehicle = random.sample(generate_context('./motion/context.json', 'vehicle'), 1)[0]
-    actor = random.sample(generate_context('./motion/context.json', 'actor'), 1)[0]
-    water = random.sample(generate_context('./motion/context.json', 'water'), 1)[0]
+    vehicle = random.sample(generate_context('./text_tasks/context.json', 'vehicle'), 1)[0]
+    actor = random.sample(generate_context('./text_tasks/context.json', 'actor'), 1)[0]
+    water = random.sample(generate_context('./text_tasks/context.json', 'water'), 1)[0]
     while True:
         boat_vel = random.randint(7, 20)
         water_vel = random.randint(1, 5)
@@ -453,9 +453,9 @@ def task_6473():
     """Генерация аналогичных задач № 6473 с портала https://kuzovkin.info/one_exercise_1/6473
     Лодочник проплыл 3 км по течению реки и 3 км против течения за то же время, за которое плот мог бы проплыть 4 км
     по течению. Собственная скорость лодки равна 6 км/ч. Найдите скорость течения реки."""
-    vehicle = random.sample(generate_context('./motion/context.json', 'vehicle'), 1)[0]
-    actor = random.sample(generate_context('./motion/context.json', 'actor'), 1)[0]
-    raft = random.sample(generate_context('./motion/context.json', 'raft'), 1)[0]
+    vehicle = random.sample(generate_context('./text_tasks/context.json', 'vehicle'), 1)[0]
+    actor = random.sample(generate_context('./text_tasks/context.json', 'actor'), 1)[0]
+    raft = random.sample(generate_context('./text_tasks/context.json', 'raft'), 1)[0]
     boat_vel = random.randint(7, 20)
     water_vel = random.randint(1, 5)
     time1 = random.randint(2, 10)
@@ -475,8 +475,8 @@ def task_6476():
     """Генерация аналогичных задач № 6476 с портала https://kuzovkin.info/one_exercise_1/6476
     Моторная лодка прошла 20 км против течения реки и 14 км по озеру, затратив на путь по озеру на 1 ч меньше, чем на
     путь по реке. Скорость течения реки равна 4 км/ч. Найдите скорость хода лодки против течения."""
-    vehicle = random.sample(generate_context('./motion/context.json', 'vehicle'), 1)[0]
-    water = random.sample(generate_context('./motion/context.json', 'water'), 1)[0]
+    vehicle = random.sample(generate_context('./text_tasks/context.json', 'vehicle'), 1)[0]
+    water = random.sample(generate_context('./text_tasks/context.json', 'water'), 1)[0]
     water_vel = random.randint(1, 6)
     boat_vel = random.randint(water_vel + 1, 15)
     flag_time = 0
@@ -525,7 +525,7 @@ def task_7757():
     """Генерация аналогичных задач № 7757 с портала https://kuzovkin.info/one_exercise_1/7757
     Собственная скорость катера 25,5 км/ч, скорость течения 2,5 км/ч. Какой путь пройдёт катер за полтора
     часа против течения?"""
-    vehicle = random.sample(generate_context('./motion/context.json', 'vehicle'), 1)[0]
+    vehicle = random.sample(generate_context('./text_tasks/context.json', 'vehicle'), 1)[0]
     water_vel = random.randint(10, 100)
     boat_vel = xround(random.randint(water_vel + 50, 400) * 0.1)
     water_vel = xround(water_vel * 0.1)
@@ -545,9 +545,9 @@ def task_7764():
     Аналогична задаче № 7767 с портала https://kuzovkin.info/one_exercise_1/7767
     Из пунктов A и B одновременно навстречу друг другу вышли плот и катер. Катер встретил плот через 4 ч после выхода,
     а еще через 20 мин прибыл в пункт B . Сколько времени плыл плот из B в A ?"""
-    vehicle = random.sample(generate_context('./motion/context.json', 'vehicle'), 1)[0]
-    raft = random.sample(generate_context('./motion/context.json', 'raft'), 1)[0]
-    dest_a, dest_b = random.sample(generate_context('./motion/context.json', 'destination'), 1)[0]
+    vehicle = random.sample(generate_context('./text_tasks/context.json', 'vehicle'), 1)[0]
+    raft = random.sample(generate_context('./text_tasks/context.json', 'raft'), 1)[0]
+    dest_a, dest_b = random.sample(generate_context('./text_tasks/context.json', 'destination'), 1)[0]
     while True:
         boat_time = random.randint(1, 7) * 60
         raft_time = random.randint(1, 5) * 10
@@ -574,7 +574,7 @@ def task_7768():
     """Генерация аналогичных задач № 7768 с портала https://kuzovkin.info/one_exercise_1/7768
     Катер по течению реки прошёл 87,5 км за 5 ч, а против течения это же расстояние он прошёл за 7 ч.
     Какова собственная скорость катера?"""
-    vehicle = random.sample(generate_context('./motion/context.json', 'vehicle'), 1)[0]
+    vehicle = random.sample(generate_context('./text_tasks/context.json', 'vehicle'), 1)[0]
     boat_vel, water_vel = _init_values()
     while True:
         rnd = random.randint(1, 5) * 0.5
@@ -603,7 +603,7 @@ def task_7770():
     """Генерация аналогичных задач № 7770 с портала https://kuzovkin.info/one_exercise_1/7770
     Теплоход по течению реки прошел 330 км за 12 ч, а против течения 240,5 км он прошел за 13 ч. Какова собственная
     скорость теплохода?"""
-    vehicle = random.sample(generate_context('./motion/context.json', 'vehicle'), 1)[0]
+    vehicle = random.sample(generate_context('./text_tasks/context.json', 'vehicle'), 1)[0]
     water_vel = random.randint(1, 10)
     boat_vel = random.randint(water_vel + 5, 30)
     time1 = random.randint(1, 15)
@@ -626,8 +626,8 @@ def task_7776():
     """Генерация аналогичных задач № 7776 с портала https://kuzovkin.info/one_exercise_1/7776
     Моторная лодка прошла 90 км по течению реки за 6 ч, а против течения реки – за 10 ч.
     За сколько времени проплывет это же расстояние плот по реке?"""
-    vehicle = random.sample(generate_context('./motion/context.json', 'vehicle'), 1)[0]
-    raft = random.sample(generate_context('./motion/context.json', 'raft'), 1)[0]
+    vehicle = random.sample(generate_context('./text_tasks/context.json', 'vehicle'), 1)[0]
+    raft = random.sample(generate_context('./text_tasks/context.json', 'raft'), 1)[0]
     boat_vel, water_vel = _init_values()
     while True:
         space = np.lcm.reduce([(boat_vel + water_vel), (boat_vel - water_vel), water_vel]) * random.randint(1, 3)
@@ -649,9 +649,9 @@ def task_7784():
     """Генерация аналогичных задач № 7784 с портала https://kuzovkin.info/one_exercise_1/7784
     Лодка проплыла некоторое расстояние по озеру за 4 ч. Такое же расстояние плот проплывает по реке за 12 ч.
     Сколько времени затратит лодка на тот же путь по течению реки?"""
-    vehicle = random.sample(generate_context('./motion/context.json', 'vehicle'), 1)[0]
-    raft = random.sample(generate_context('./motion/context.json', 'raft'), 1)[0]
-    water = random.sample(generate_context('./motion/context.json', 'water'), 1)[0]
+    vehicle = random.sample(generate_context('./text_tasks/context.json', 'vehicle'), 1)[0]
+    raft = random.sample(generate_context('./text_tasks/context.json', 'raft'), 1)[0]
+    water = random.sample(generate_context('./text_tasks/context.json', 'water'), 1)[0]
     while True:
         boat_vel, water_vel = _init_values()
         space = np.lcm.reduce([(boat_vel + water_vel), boat_vel, water_vel]) * random.randint(1, 3)
@@ -673,7 +673,7 @@ def task_7790():
     """Генерация аналогичных задач № 7790 с портала https://kuzovkin.info/one_exercise_1/7790
     Собственная скорость теплохода равна 32,5 км, а его скорость по течению реки 35 км/ч.
     Какое расстояние проплывет теплоход, если будет двигаться 2,6 ч по течению реки и 0,8 ч против течения?"""
-    vehicle = random.sample(generate_context('./motion/context.json', 'vehicle'), 1)[0]
+    vehicle = random.sample(generate_context('./text_tasks/context.json', 'vehicle'), 1)[0]
     water_vel = random.randint(2, 8)
     boat_vel = random.randint(water_vel + 5, 45)
     t1 = xround(random.randint(1, 50) * 0.1)
@@ -695,8 +695,8 @@ def task_7796():
     От лесоповала вниз по течению реки движется со скоростью 3 км/ч плот.
     Плотовщик доплывает на моторке из конца плота к его началу и обратно за 16 минут 40 секунд. Найдите длину плота,
     если собственная скорость моторки равна 15 км/ч. Ответ дайте в километрах."""
-    vehicle = random.sample(generate_context('./motion/context.json', 'vehicle'), 1)[0]
-    raft = random.sample(generate_context('./motion/context.json', 'raft'), 1)[0]
+    vehicle = random.sample(generate_context('./text_tasks/context.json', 'vehicle'), 1)[0]
+    raft = random.sample(generate_context('./text_tasks/context.json', 'raft'), 1)[0]
     while True:
         water_vel = random.randint(1, 5)
         boat_vel = random.randint(water_vel + 2, 20)
@@ -723,8 +723,8 @@ def task_8611():
     Аналогична задаче № 7777 с портала https://kuzovkin.info/one_exercise_1/7777
     Моторная лодка прошла 90 км по течению реки за 6 ч, а против течения реки – за 10 ч. За сколько времени проплывет
     это же расстояние моторная лодка по озеру?"""
-    vehicle = random.sample(generate_context('./motion/context.json', 'vehicle'), 1)[0]
-    water = random.sample(generate_context('./motion/context.json', 'water'), 1)[0]
+    vehicle = random.sample(generate_context('./text_tasks/context.json', 'vehicle'), 1)[0]
+    water = random.sample(generate_context('./text_tasks/context.json', 'water'), 1)[0]
     boat_vel, water_vel = _init_values()
     while True:
         space = np.lcm.reduce([(boat_vel + water_vel), (boat_vel - water_vel), boat_vel])
@@ -747,7 +747,7 @@ def task_8620():
     """Генерация аналогичных задач № 8620 с портала https://kuzovkin.info/one_exercise_1/8620
     Собственная скорость теплохода равна 32,5 км, а его скорость по течению реки 35 км/ч.
     С какой скоростью течет река?"""
-    vehicle = random.sample(generate_context('./motion/context.json', 'vehicle'), 1)[0]
+    vehicle = random.sample(generate_context('./text_tasks/context.json', 'vehicle'), 1)[0]
     water_vel = random.randint(2, 8)
     boat_vel = random.randint(15, 45)
     task = (f'Собственная скорость {choosing_declension_form(vehicle)} равна {boat_vel} км/ч, '
@@ -763,7 +763,7 @@ def task_8621():
     """Генерация аналогичных задач № 8621 с портала https://kuzovkin.info/one_exercise_1/8621
     Собственная скорость теплохода равна 32,5 км, а его скорость по течению реки 35 км/ч. Какова скорость теплохода
     против течения реки?"""
-    vehicle = random.sample(generate_context('./motion/context.json', 'vehicle'), 1)[0]
+    vehicle = random.sample(generate_context('./text_tasks/context.json', 'vehicle'), 1)[0]
     water_vel = random.randint(2, 8)
     boat_vel = random.randint(15, 45)
     task = (f'Собственная скорость {choosing_declension_form(vehicle)} равна {boat_vel} км/ч, '
@@ -779,7 +779,7 @@ def task_8623():
     """Генерация аналогичных задач № 8623 с портала https://kuzovkin.info/one_exercise_1/8623
     Собственная скорость катера равна 14,7 км, а его скорость против течения реки 10,2 км/ч.
     С какой скоростью течет река?"""
-    vehicle = random.sample(generate_context('./motion/context.json', 'vehicle'), 1)[0]
+    vehicle = random.sample(generate_context('./text_tasks/context.json', 'vehicle'), 1)[0]
     water_vel = xround(random.randint(10, 100) * 0.1)
     boat_vel = xround(random.randint(80, 400) * 0.1)
     task = (f'Собственная скорость {choosing_declension_form(vehicle)} равна {boat_vel} км/ч, '
@@ -795,7 +795,7 @@ def task_10171():
     """Генерация аналогичных задач № 10171 с портала https://kuzovkin.info/one_exercise_1/10171
     Собственная скорость лодки 8,5 км/ч, а скорость течения 3,5 км/ч. Расстояние между пристанями 15 км.
     Сколько времени затратит лодка на путь между пристанями туда и обратно?"""
-    vehicle = random.sample(generate_context('./motion/context.json', 'vehicle'), 1)[0]
+    vehicle = random.sample(generate_context('./text_tasks/context.json', 'vehicle'), 1)[0]
     while True:
         water_vel = random.randint(10, 100)
         boat_vel = random.randint(water_vel + 10, 400)
@@ -819,7 +819,7 @@ def task_10195():
     """Генерация аналогичных задач № 10195 с портала https://kuzovkin.info/one_exercise_1/10195
     Лодка может пройти расстояние между двумя пристанями за 1 ч 30 мин против течения реки и за 1 ч 12 мин по течению
     реки. Скорость течения реки 1,2 км/ч. Найдите собственную скорость лодки."""
-    vehicle = random.sample(generate_context('./motion/context.json', 'vehicle'), 1)[0]
+    vehicle = random.sample(generate_context('./text_tasks/context.json', 'vehicle'), 1)[0]
     while True:
         water_vel = random.randint(10, 50)
         boat_vel = random.randint(water_vel + 10, 200)
@@ -847,8 +847,8 @@ def task_10210():
     От лесоповала вниз по течению реки движется плот длиной 1 км. Плотовщик доплывает на моторке из конца плота к его
     началу и обратно за 8 минут 20 секунд. Найдите скорость плота, если собственная скорость моторки равна 15 км/ч.
     Ответ дайте в км/ч."""
-    vehicle = random.sample(generate_context('./motion/context.json', 'vehicle'), 1)[0]
-    raft = random.sample(generate_context('./motion/context.json', 'raft'), 1)[0]
+    vehicle = random.sample(generate_context('./text_tasks/context.json', 'vehicle'), 1)[0]
+    raft = random.sample(generate_context('./text_tasks/context.json', 'raft'), 1)[0]
     while True:
         water_vel = random.randint(1, 5)
         boat_vel = random.randint(water_vel + 2, 20)
@@ -873,8 +873,8 @@ def task_12774():
     Прогулочный теплоход отправился от пристани А к пристани В вниз по течению реки. После получасовой стоянки в B он
     отправился обратно и через 8 ч после отплытия из А вернулся к той же пристани. Какова собственная скорость
     теплохода, если расстояние между пристанями А и B равно 36 км, а скорость течения реки равна 2 км/ч"""
-    vehicle = random.sample(generate_context('./motion/context.json', 'vehicle'), 1)[0]
-    dest_a, dest_b = random.sample(generate_context('./motion/context.json', 'destination'), 1)[0]
+    vehicle = random.sample(generate_context('./text_tasks/context.json', 'vehicle'), 1)[0]
+    dest_a, dest_b = random.sample(generate_context('./text_tasks/context.json', 'destination'), 1)[0]
     while True:
         water_vel = random.randint(1, 5)
         boat_vel = random.randint(water_vel + 2, 20)
@@ -902,7 +902,7 @@ def task_12778():
     """Генерация аналогичных задач № 12778 с портала https://kuzovkin.info/one_exercise_1/12778
     Катер прошел по течению реки 8 км и 16 км против течения реки, затратив на весь путь 4/3 часа. Какова скорость
     катера по течению, если собственная скорость катера равна 20 км/ч?"""
-    vehicle = random.sample(generate_context('./motion/context.json', 'vehicle'), 1)[0]
+    vehicle = random.sample(generate_context('./text_tasks/context.json', 'vehicle'), 1)[0]
     while True:
         water_vel = random.randint(1, 5)
         boat_vel = random.randint(water_vel + 2, 20)
@@ -931,7 +931,7 @@ def task_12780():
     Пункты А,Б,С расположены на реке в указанном порядке вниз по течению. Расстояние между А и Б равно 4 км, а между Б
     и С - 14 км. В 12 часов из пункта Б отплыла лодка и направилась в пункт А. Достигнув пункта А, она сразу же
     повернула назад и в 14 часов прибыла в пункт С. Скорость течения - 5 км/ч. Найти скорость лодки в стоячей воде."""
-    vehicle = random.sample(generate_context('./motion/context.json', 'vehicle'), 1)[0]
+    vehicle = random.sample(generate_context('./text_tasks/context.json', 'vehicle'), 1)[0]
     while True:
         space1 = random.randint(3, 8)
         space2 = random.randint(10, 20)
@@ -952,38 +952,3 @@ def task_12780():
         "condition": task,
         "answer": boat_vel
     }
-
-
-if __name__ == '__main__':
-    from pprint import pprint
-
-    def run_task(*args):
-        for task in args:
-            name = f'task_{task}()'
-            try:
-                result = eval(name)
-                if result is None:
-                    print(f'Задача № {task} пропущена')
-                else:
-                    print(f'Задача № {task}')
-                    pprint(result)
-            except Exception as e:
-                if f'is not defined' in str(e):
-                    print(f'Задача № {task} отсутствует')
-                else:
-                    print(e)
-    task_all = 1
-    tasks = [14, 38, 45, 2598, 2602, 2604, 2606, 3881, 3882, 3886, 3888, 3889, 3897, 3900, 3908, 3912, 6472, 6473,
-             6476, 6481, 7757, 7764, 7767, 7768, 7770, 7776, 7777, 7784, 7790, 7796, 8603, 8611, 8620, 8621, 8623,
-             10171, 10182, 10187, 10191, 10194, 10195, 10210, 12774, 12778, 12780]
-    if task_all: run_task(*tasks)
-    # for i in range(10):
-    #     print(task_7768()["condition"])
-    # print(task_2604())
-    # print(task_3888())
-    # print(task_3900())
-    # for i in range(10):
-    #     print(task_7764())
-
-
-
