@@ -1,7 +1,7 @@
 import random
 import numpy as np
 from fractions import Fraction
-from text_tasks.utils import generate_context, find_genus_object, capitalize_word, choosing_declension_form, change_genus
+from text_tasks.utils import generate_context, capitalize_word, choosing_declension_form, change_genus
 
 
 def xround(num):
