@@ -562,8 +562,9 @@ def task_7764():
             f'{"встретил" if find_genus_object(vehicle) == 1 else "встретила"} {raft} через {boat_time // 60} ч. после '
             f'выхода, а еще через {raft_time} мин. '
             f'{"прибыл" if find_genus_object(vehicle) == 1 else "прибыла"} {raft} в пункт '
-            f'B. Сколько времени {"плыл" if find_genus_object(raft) == 1 else "плыла" if find_genus_object(raft) == 2 
-            else "плыло"} {raft} из {choosing_declension_form(dest_b)} в {dest_a}?')
+            f'B. Сколько времени '
+            f'{"плыл" if find_genus_object(raft) == 1 else "плыла" if find_genus_object(raft) == 2 else "плыло"} '
+            f'{raft} из {choosing_declension_form(dest_b)} в {dest_a}?')
     return {
         "condition": task,
         "answer": raft_time1
