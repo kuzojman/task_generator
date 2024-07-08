@@ -49,6 +49,7 @@ def choosing_declension_form(text, target_case='gent'):
 
     return ' '.join(changed_words)
 
+
 def capitalize_word(word):
   '''Функция напишет слово с заглавной буквы, если передается фраза,
   функция пропишет только первое слово с заглавной буквы'''
@@ -57,6 +58,7 @@ def capitalize_word(word):
   else:
     words_list = word.split(' ', 1)
     return words_list[0].title() +' '+ words_list[1]
+
 
 def find_genus_object(item):
   '''Функция находит какого рода переданный объект,
@@ -76,6 +78,35 @@ def find_genus_object(item):
       return 2
     else: return 3
 
+
+def change_genus(original, genus_word):
+    '''Функция меняет род 1го параметра на род 2го параметра'''
+    morph = pymorphy3.MorphAnalyzer()
+    words = original.split()
+    changed_words = []
+    genus = morph.parse(genus_word)[0].tag.gender
+    for word in words:
+        if word in ["он", "она", "оно"]:
+            if genus == 'masc':
+                changed_words.append('он')
+            elif genus == 'femn':
+                changed_words.append('она')
+            else:
+                changed_words.append('оно')
+            continue
+        if word in ["его", "ее"]:
+            if genus == 'masc' or genus == 'neut':
+                changed_words.append('его')
+            elif genus == 'femn':
+                changed_words.append('ее')
+            continue
+        try:
+            changed_words.append(morph.parse(word)[0].inflect({genus}).word)
+        except AttributeError:
+            changed_words.append(word)
+    return ' '.join(changed_words)
+
+
 def find_number_object(item):
   '''Функция находит какого числа переданный предмет, множественного или единственного,
   в результате возвращает значение в виде цифры, где 1 - единственное число, 2 - множественное число'''
@@ -84,6 +115,7 @@ def find_number_object(item):
     return 1
   elif morph.parse(item)[0].tag.number == 'plur':
     return 2
+
 
 def write_numeral_word(num):
   '''Функция напишет переданное числительное 2, 3, 4 или 5 словом в соответсвующей форме'''
@@ -94,10 +126,12 @@ def write_numeral_word(num):
       5: 'впятеро'}
   return collection_numeral[num]
 
+
 def create_regex_pattern(expression):
   '''Функция формирует шаблон регулярного выражения'''
   regex_pattern = re.escape(expression)
   return regex_pattern
+
 
 def solves_equation(equation):
   '''Функция решает уравнение с неизвестной переменной х!'''
@@ -106,6 +140,7 @@ def solves_equation(equation):
   eq = Eq(eval(equation_list[0]), eval(equation_list[1]))
   result = solve(eq, x)
   return result
+
 
 def fraction_latex_format(result):
     '''Функция выводит число в дробь в стиле LaTeX и расчитывает все его целые значения, если таковы имеются'''
