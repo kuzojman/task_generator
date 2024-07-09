@@ -1,7 +1,7 @@
 import random
 import numpy as np
 from fractions import Fraction
-from text_tasks.utils import generate_context, find_genus_object, capitalize_word, choosing_declension_form
+from text_tasks.utils import generate_context, capitalize_word, choosing_declension_form, change_genus
 
 
 def xround(num):
@@ -75,7 +75,7 @@ def task_38():
         if result_fraction.numerator == 1:
             boat_time2 = result_fraction.denominator
             break
-    task = (f'{capitalize_word(vehicle)} {"проплыл" if find_genus_object(raft) == 1 else "проплыла"} путь по '
+    task = (f'{capitalize_word(vehicle)} {change_genus('проплыл', vehicle)} путь по '
             f'{choosing_declension_form(water, "datv")} '
             f'за {boat_time} ч. Такое же расстояние {raft} проплывает по реке за {raft_time} ч. '
             f'Сколько времени затратит {vehicle} на тот же путь по течению реки?')
@@ -119,9 +119,9 @@ def task_2598():
     s1 = (boat_vel + water_vel) * time
     s2 = (boat_vel - water_vel) * time
     s3 = boat_vel * time * 2
-    task = (f'{capitalize_word(vehicle)} {"прошёл" if find_genus_object(vehicle) == 1 else "прошла"} {s1} '
+    task = (f'{capitalize_word(vehicle)} {change_genus("прошёл", vehicle)} {s1} '
             f'км по течению реки и {s2} км против течения за то же время, что '
-            f'{"он" if find_genus_object(vehicle) == 1 else "она"} проходит {s3} км в стоячей воде. '
+            f'{change_genus("он", vehicle)} проходит {s3} км в стоячей воде. '
             f'Найдите скорость {choosing_declension_form(vehicle)} в стоячей воде, если'
             f' скорость течения реки равна {water_vel} км/ч.')
     return {
@@ -145,10 +145,10 @@ def task_2602():
         s2 = xround(boat_vel * time2_boat_minute / 60)
         if len(str(s1)) < 3 and len(str(s2)) < 3:
             break
-    task = (f'{capitalize_word(vehicle)} {"прошел" if find_genus_object(vehicle) == 1 else "прошла"} по течению реки '
+    task = (f'{capitalize_word(vehicle)} {change_genus("прошел",vehicle)} по течению реки '
             f'расстояние {s1} км, затем по {choosing_declension_form(water, "datv")} {s2} км, затратив на весь '
-            f'путь 1 ч. С какой скоростью {"он" if find_genus_object(vehicle) == 1 else "она"} '
-            f'{"шел" if find_genus_object(vehicle) == 1 else "шла"}, если скорость течения реки '
+            f'путь 1 ч. С какой скоростью {change_genus("он", vehicle)} '
+            f'{change_genus("шел", vehicle)}, если скорость течения реки '
             f'равна {water_vel} км/ч?')
     return {
         "condition": task,
@@ -200,7 +200,7 @@ def task_2606():
         flag_time = 1
     else:
         flag_time = 0
-    task = (f'{capitalize_word(vehicle)} {"прошёл" if find_genus_object(vehicle) == 1 else "прошла"} {s1} '
+    task = (f'{capitalize_word(vehicle)} {change_genus("прошёл", vehicle)} {s1} '
             f'км по течению реки и {s2} км против течения, затратив на путь по течению на '
             f'{xround(time1 - time2) if flag_time else xround(time2 - time1)} ч {"больше" if flag_time else "меньше"}, '
             f'чем на путь против течения. Собственная скорость {choosing_declension_form(vehicle)} равна {boat_vel} '
@@ -360,10 +360,10 @@ def task_3900():
     t1 = space / (boat_vel + water_vel)
     t2 = space / (boat_vel - water_vel)
     t1, t2, space = float_to_int(t1, t2, space)
-    task = (f'{capitalize_word(vehicle)} по течению реки {"прошёл" if find_genus_object(vehicle) == 1 else "прошла"} '
+    task = (f'{capitalize_word(vehicle)} по течению реки {change_genus("прошёл", vehicle)} '
             f'{space} км за {t1} ч, а против течения это '
-            f'же расстояние {"он" if find_genus_object(vehicle) == 1 else "она"} '
-            f'{"прошёл" if find_genus_object(vehicle) == 1 else "прошла"} за {t2} ч. Какова скорость течения реки?')
+            f'же расстояние {change_genus("он", vehicle)} '
+            f'{change_genus("прошёл", vehicle)} за {t2} ч. Какова скорость течения реки?')
     return {
         "condition": task,
         "answer": water_vel
@@ -414,7 +414,7 @@ def task_3912():
         result = Fraction(1, time1) - Fraction(1, time2)
         if result.numerator == 1:
             break
-    task = (f'{capitalize_word(vehicle)} {"проплыл" if find_genus_object(vehicle) == 1 else "проплыла"} некоторое '
+    task = (f'{capitalize_word(vehicle)} {change_genus("проплыл", vehicle)} некоторое '
             f'расстояние по {choosing_declension_form(water, "datv")} за {time1} ч. Такое же расстояние {raft} проплывает по '
             f'реке за {time2} ч. Сколько времени затратит {vehicle} на тот же путь против течения реки?')
     return {
@@ -462,7 +462,7 @@ def task_6473():
     time2 = random.randint(2, 10)
     task = (f'{capitalize_word(actor)} проплыл {time1 * (water_vel + boat_vel)} и {time2 * (boat_vel - water_vel)} км '
             f'км против течения реки за то же время, за которое {raft} '
-            f'{"мог" if find_genus_object(raft) == 1 else "могла" if find_genus_object(raft) == 2 else "могло"} бы '
+            f'{change_genus("мог", raft)} бы '
             f'проплыть {water_vel * (time1 + time2)} км по течению. Собственная скорость '
             f'{choosing_declension_form(vehicle)} равна {boat_vel} км/ч. Найдите скорость течения реки.')
     return {
@@ -488,7 +488,7 @@ def task_6476():
             break
     if time1 > time2:
         flag_time = 1
-    task = (f'{capitalize_word(vehicle)} {"прошёл" if find_genus_object(vehicle) == 1 else "прошла"} {s1} км '
+    task = (f'{capitalize_word(vehicle)} {change_genus("прошёл", vehicle)} {s1} км '
             f'против течения реки и {s2} км по {choosing_declension_form(water, "datv")}, затратив на путь '
             f'по {choosing_declension_form(water, "datv")} на {xround(abs(time1 - time2))} ч '
             f'{"меньше" if flag_time else "больше"}, чем на путь по реке. Скорость течения реки равна {water_vel} '
@@ -559,11 +559,10 @@ def task_7764():
 
     task = (f'Из {choosing_declension_form(dest_a)} и {choosing_declension_form(dest_b)} одновременно навстречу друг '
             f'другу вышли {raft} и {vehicle}. {capitalize_word(vehicle)} '
-            f'{"встретил" if find_genus_object(vehicle) == 1 else "встретила"} {raft} через {boat_time // 60} ч. после '
+            f'{change_genus("встретил", vehicle)} {raft} через {boat_time // 60} ч. после '
             f'выхода, а еще через {raft_time} мин. '
-            f'{"прибыл" if find_genus_object(vehicle) == 1 else "прибыла"} {raft} в пункт '
-            f'B. Сколько времени {"плыл" if find_genus_object(raft) == 1 else "плыла" if find_genus_object(raft) == 2 
-            else "плыло"} {raft} из {choosing_declension_form(dest_b)} в {dest_a}?')
+            f'{change_genus("прибыл", vehicle)} в пункт B. Сколько времени '
+            f'{change_genus("плыл", raft)} {raft} из {choosing_declension_form(dest_b)} в {dest_a}?')
     return {
         "condition": task,
         "answer": raft_time1
@@ -588,10 +587,10 @@ def task_7768():
     t1 = space / (boat_vel + water_vel)
     t2 = space / (boat_vel - water_vel)
     t1, t2, space = float_to_int(t1, t2, space)
-    task = (f'{capitalize_word(vehicle)} по течению реки {"прошёл" if find_genus_object(vehicle) == 1 else "прошла"} '
+    task = (f'{capitalize_word(vehicle)} по течению реки {change_genus("прошёл", vehicle)} '
             f'{space} км за {t1} ч, а против течения это '
-            f'же расстояние {"он" if find_genus_object(vehicle) == 1 else "она"} '
-            f'{"прошёл" if find_genus_object(vehicle) == 1 else "прошла"} за {t2} ч. Какова собственная '
+            f'же расстояние {change_genus("он", vehicle)} '
+            f'{change_genus("прошёл", vehicle)} за {t2} ч. Какова собственная '
             f'скорость {choosing_declension_form(vehicle)}?')
     return {
         "condition": task,
@@ -611,10 +610,10 @@ def task_7770():
         time2 = random.randint(1, 15)
         if time1 != time2:
             break
-    task = (f'{capitalize_word(vehicle)} по течению реки {"прошёл" if find_genus_object(vehicle) == 1 else "прошла"} '
+    task = (f'{capitalize_word(vehicle)} по течению реки {change_genus("прошёл", vehicle)} '
             f'{time1 * (boat_vel + water_vel)} км за {time1} ч, а против течения {time2 * (boat_vel - water_vel)} км '
-            f'{"он" if find_genus_object(vehicle) == 1 else "она"} '
-            f'{"прошёл" if find_genus_object(vehicle) == 1 else "прошла"} за {time2} ч. Какова собственная '
+            f'{change_genus("он", vehicle)} '
+            f'{change_genus("прошёл", vehicle)} за {time2} ч. Какова собственная '
             f'скорость {choosing_declension_form(vehicle)}?')
     return {
         "condition": task,
@@ -636,7 +635,7 @@ def task_7776():
         boat_vel, water_vel = _init_values()
     t1 = xround(space / (boat_vel + water_vel))
     t2 = xround(space / (boat_vel - water_vel))
-    task = (f'{capitalize_word(vehicle)} {"прошёл" if find_genus_object(vehicle) == 1 else "прошла"} {space} км '
+    task = (f'{capitalize_word(vehicle)} {change_genus("прошёл", vehicle)} {space} км '
             f'по течению реки за {t1} ч, а против течения реки - за {t2} ч. За сколько времени проплывет это же '
             f'расстояние {raft} по реке?')
     return {
@@ -659,7 +658,7 @@ def task_7784():
             break
     t1 = xround(space / boat_vel)
     t2 = xround(space / water_vel)
-    task = (f'{capitalize_word(vehicle)} {"проплыл" if find_genus_object(vehicle) == 1 else "проплыла"} некоторое '
+    task = (f'{capitalize_word(vehicle)} {change_genus("проплыл", vehicle)} некоторое '
             f'расстояние по {choosing_declension_form(water, "datv")} за {t1} ч. Такое же расстояние плот '
             f'проплывает по реке за {t2} ч. Сколько времени '
             f'затратит {vehicle} на тот же путь по течению реки?')
@@ -734,7 +733,7 @@ def task_8611():
             boat_vel, water_vel = _init_values()
     time1 = space // (boat_vel + water_vel)
     time2 = space // (boat_vel - water_vel)
-    task = (f'{capitalize_word(vehicle)} {"прошёл" if find_genus_object(vehicle) == 1 else "прошла"} {space} км '
+    task = (f'{capitalize_word(vehicle)} {change_genus("прошёл", vehicle)} {space} км '
             f'за {time1} ч по течению реки, а против течения реки - за {time2} ч, За сколько времени проплывет '
             f'это же расстояние {vehicle} по {choosing_declension_form(water, "datv")}?')
     return {
@@ -751,7 +750,7 @@ def task_8620():
     water_vel = random.randint(2, 8)
     boat_vel = random.randint(15, 45)
     task = (f'Собственная скорость {choosing_declension_form(vehicle)} равна {boat_vel} км/ч, '
-            f'а {"его" if find_genus_object(vehicle) == 1 else "её"} скорость по течению реки {boat_vel + water_vel} '
+            f'а {change_genus("его", vehicle)} скорость по течению реки {boat_vel + water_vel} '
             f'км/ч. С какой скоростью течет река?')
     return {
         "condition": task,
@@ -767,7 +766,7 @@ def task_8621():
     water_vel = random.randint(2, 8)
     boat_vel = random.randint(15, 45)
     task = (f'Собственная скорость {choosing_declension_form(vehicle)} равна {boat_vel} км/ч, '
-            f'а {"его" if find_genus_object(vehicle) == 1 else "её"} скорость по течению реки {boat_vel + water_vel} '
+            f'а {change_genus("его", vehicle)} скорость по течению реки {boat_vel + water_vel} '
             f'км/ч. Какова скорость {choosing_declension_form(vehicle)} против течения реки?')
     return {
         "condition": task,
@@ -783,7 +782,7 @@ def task_8623():
     water_vel = xround(random.randint(10, 100) * 0.1)
     boat_vel = xround(random.randint(80, 400) * 0.1)
     task = (f'Собственная скорость {choosing_declension_form(vehicle)} равна {boat_vel} км/ч, '
-            f'а {"его" if find_genus_object(vehicle) == 1 else "её"} скорость против течения реки '
+            f'а {change_genus("его", vehicle)} скорость против течения реки '
             f'{xround(boat_vel - water_vel)} км/ч. С какой скоростью течет река?')
     return {
         "condition": task,
@@ -916,7 +915,7 @@ def task_12778():
         space2 = xround((boat_vel - water_vel) * Fraction(t2_nom, time_denom))
         if isinstance(space1, int) and isinstance(space2, int):
             break
-    task = (f'{capitalize_word(vehicle)} {"прошёл" if find_genus_object(vehicle) == 1 else "прошла"} по течению '
+    task = (f'{capitalize_word(vehicle)} {change_genus("прошёл", vehicle)} по течению '
             f'реки {space1} км и {space2} км против течения реки, затратив на весь путь '
             f'{Fraction(t1_nom + t2_nom, time_denom)} часа. Какова скорость {choosing_declension_form(vehicle)} по '
             f'течению, если собственная скорость {choosing_declension_form(vehicle)} равна {boat_vel} км/ч?')
