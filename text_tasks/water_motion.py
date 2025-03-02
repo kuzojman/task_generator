@@ -70,12 +70,12 @@ def task_38():
     water = random.sample(generate_context('./text_tasks/context.json', 'water'), 1)[0]
     while True:
         raft_time = random.randint(20, 80)
-        boat_time = random.randint(1, 8)
+        boat_time = random.randint(1, 20)
         result_fraction = Fraction(1, boat_time) + Fraction(1, raft_time)
         if result_fraction.numerator == 1:
             boat_time2 = result_fraction.denominator
             break
-    task = (f'{capitalize_word(vehicle)} {change_genus('проплыл', vehicle)} путь по '
+    task = (f'{capitalize_word(vehicle)} {change_genus("проплыл", vehicle)} путь по '
             f'{choosing_declension_form(water, "datv")} '
             f'за {boat_time} ч. Такое же расстояние {raft} проплывает по реке за {raft_time} ч. '
             f'Сколько времени затратит {vehicle} на тот же путь по течению реки?')
