@@ -1,4 +1,5 @@
-import pymorphy2
+import pymorphy3
+import pymorphy3 as pymorphy2
 import json
 from sympy import Eq, symbols, solve
 import re
@@ -9,13 +10,13 @@ def generate_context(file_json, category):
   '''Функция из файла-json возвращает список возможных вариантов сюжета для задачи,
   необходимо передать файл-json и требуемую категорию. Возвращает список'''
   with open(file_json, 'r', encoding='utf8') as my_file:
-    templates = my_file.read()
-    context = json.loads(templates)
-  return context[category]
+    return json.load(my_file)[category]
 
+
+'''Старая функция для склонения
 def choosing_declension_form(word, case='gent'):
-  '''Функция подбирает правильную форму склонения переданного слова, см. https://opencorpora.org/dict.php?act=gram,
-  по умолчанию слово пропишется в родительном падеже'''
+  Функция подбирает правильную форму склонения переданного слова, см. https://opencorpora.org/dict.php?act=gram,
+  по умолчанию слово пропишется в родительном падеже
   morph = pymorphy2.MorphAnalyzer()
   if len(word.split()) < 2:
     return morph.parse(word)[0].inflect({case}).word
@@ -24,7 +25,30 @@ def choosing_declension_form(word, case='gent'):
     list_morphy = []
     for i in list_words:
       list_morphy.append(morph.parse(i)[0].inflect({case}).word)
-    return ' '.join(list_morphy)
+    return ' '.join(list_morphy)'''
+
+
+def choosing_declension_form(text, target_case='gent'):
+    '''Функция подбирает правильную форму склонения переданного слова, см. https://opencorpora.org/dict.php?act=gram,
+    по умолчанию слово пропишется в родительном падеже'''
+    morph = pymorphy2.MorphAnalyzer()
+    words = text.split()
+    changed_words = []
+    for word in words:
+        case = 0
+        if word[0].isupper():
+            case = 1
+        parsed_word = morph.parse(word)[0]
+        try:
+            changed_word = parsed_word.inflect({target_case}).word
+        except AttributeError:
+            changed_word = word  # Если не удается изменить падеж, оставляем слово без изменений
+        if case:
+            changed_word = changed_word.title()
+        changed_words.append(changed_word)
+
+    return ' '.join(changed_words)
+
 
 def capitalize_word(word):
   '''Функция напишет слово с заглавной буквы, если передается фраза,
@@ -34,6 +58,7 @@ def capitalize_word(word):
   else:
     words_list = word.split(' ', 1)
     return words_list[0].title() +' '+ words_list[1]
+
 
 def find_genus_object(item):
   '''Функция находит какого рода переданный объект,
@@ -53,6 +78,35 @@ def find_genus_object(item):
       return 2
     else: return 3
 
+
+def change_genus(original, genus_word):
+    '''Функция меняет род 1го параметра на род 2го параметра'''
+    morph = pymorphy3.MorphAnalyzer()
+    words = original.split()
+    changed_words = []
+    genus = morph.parse(genus_word)[0].tag.gender
+    for word in words:
+        if word in ["он", "она", "оно"]:
+            if genus == 'masc':
+                changed_words.append('он')
+            elif genus == 'femn':
+                changed_words.append('она')
+            else:
+                changed_words.append('оно')
+            continue
+        if word in ["его", "ее"]:
+            if genus == 'masc' or genus == 'neut':
+                changed_words.append('его')
+            elif genus == 'femn':
+                changed_words.append('ее')
+            continue
+        try:
+            changed_words.append(morph.parse(word)[0].inflect({genus}).word)
+        except AttributeError:
+            changed_words.append(word)
+    return ' '.join(changed_words)
+
+
 def find_number_object(item):
   '''Функция находит какого числа переданный предмет, множественного или единственного,
   в результате возвращает значение в виде цифры, где 1 - единственное число, 2 - множественное число'''
@@ -61,6 +115,7 @@ def find_number_object(item):
     return 1
   elif morph.parse(item)[0].tag.number == 'plur':
     return 2
+
 
 def write_numeral_word(num):
   '''Функция напишет переданное числительное 2, 3, 4 или 5 словом в соответсвующей форме'''
@@ -71,10 +126,12 @@ def write_numeral_word(num):
       5: 'впятеро'}
   return collection_numeral[num]
 
+
 def create_regex_pattern(expression):
   '''Функция формирует шаблон регулярного выражения'''
   regex_pattern = re.escape(expression)
   return regex_pattern
+
 
 def solves_equation(equation):
   '''Функция решает уравнение с неизвестной переменной х!'''
@@ -83,6 +140,7 @@ def solves_equation(equation):
   eq = Eq(eval(equation_list[0]), eval(equation_list[1]))
   result = solve(eq, x)
   return result
+
 
 def fraction_latex_format(result):
     '''Функция выводит число в дробь в стиле LaTeX и расчитывает все его целые значения, если таковы имеются'''
