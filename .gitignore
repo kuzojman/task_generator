@@ -3,3 +3,8 @@
 venv/
 .venv
 pyvenv.cfg
+
+# служебные документы аудита и исходные данные задачи № 14 — не часть продукта
+PROJECT_REPORT.md
+PLAN_NUMSYS.md
+numsys_table.tsv

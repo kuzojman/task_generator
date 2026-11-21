@@ -3,6 +3,8 @@ import importlib
 
 from flask import Flask, request, jsonify, make_response
 
+from task_errors import BudgetError, ParamError
+
 
 sys.path.append('/')
 app = Flask(__name__)
@@ -25,6 +27,11 @@ def hello_world():
     file_name, func_name = splited_data
     prototype = ''
     if '$$' in func_name:
+        if func_name.count('$$') != 1:
+            return make_response(
+                jsonify({'error': 'The url for function must contain at most one $$'}),
+                400,
+            )
         func_name, prototype = func_name.split('$$')
     try:
         results_view = importlib.import_module(file_name)
@@ -46,6 +53,10 @@ def hello_world():
             ),
             400,
         )
+    except ParamError as error:
+        return make_response(jsonify({'error': str(error)}), 400)
+    except BudgetError as error:
+        return make_response(jsonify({'error': str(error)}), 503)
 
 
 if __name__ == '__main__':
