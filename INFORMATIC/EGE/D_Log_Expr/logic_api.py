@@ -15,6 +15,18 @@ JSON как есть, поэтому обёртки возвращают ров�
 
 `task_bits_*` не используют `prototype` и сохраняют прежний путь.
 
+Рекомендуемая точка входа для новых вызовов -- `task_logic`. В её prototype
+обязательны `facts`, `topics`, `steps`, `intervals`, `seed`; необязателен
+`question` (`min_length` или `max_length`). Например::
+
+    url=INFORMATIC.EGE.D_Log_Expr.logic_api||task_logic$$facts={"P":[5,30],"Q":[14,23]};topics=morgan,implication;steps=3;intervals=2;seed=1
+
+`task_logic` использует переданные отрезки как имена множеств (P и Q не
+закреплены за ролями границ A), строит по ним несколько внутренних условий
+(например, I ⊆ A ⊆ U и U ⊆ A), а затем применяет question уже к полученным
+вариантам. Старые `task_line_*`/`task_bits_*` продолжают работать с прежними
+сигнатурами.
+
 Условие берётся из `Task.text` -- без префикса «Задача N.», который добавляет
 `Task.statement()`.
 
@@ -30,6 +42,8 @@ JSON как есть, поэтому обёртки возвращают ров�
 бюджетом `MAX_ATTEMPTS`. Если задача не собралась, поднимается `BudgetError`;
 темы, число шагов, число отрезков и seed не изменяются.
 """
+import json
+
 try:
     from task_errors import BudgetError, ParamError
 except ImportError:  # прямой запуск файлом, без пакетного импорта
@@ -41,12 +55,18 @@ except ImportError:  # прямой запуск файлом, без пакет
     from task_errors import BudgetError, ParamError
 
 try:
-    from .logic_tasks import TaskParams, default_topics, generate_tasks
+    from .logic_tasks import (
+        FACT_NAMES, LINE_TOPICS, TaskParams, build_facts_task, default_topics,
+        generate_tasks,
+    )
 except ImportError:  # прямой запуск файлом, без пакетного импорта
     import os
     import sys
     sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-    from logic_tasks import TaskParams, default_topics, generate_tasks
+    from logic_tasks import (
+        FACT_NAMES, LINE_TOPICS, TaskParams, build_facts_task, default_topics,
+        generate_tasks,
+    )
 
 
 #: Лимит попыток на один вызов генератора.
@@ -72,6 +92,13 @@ MIN_INTERVALS, MAX_INTERVALS = 2, 4
 #: Для task_line_* все четыре ключа обязательны.
 _REQUIRED_LINE_KEYS = ("topics", "steps", "intervals", "seed")
 _PROTO_KEYS = _REQUIRED_LINE_KEYS
+
+#: Для task_logic facts/steps обязательны; question -- нет.
+_REQUIRED_FACTS_KEYS = ("facts", "topics", "steps", "intervals", "seed")
+_OPTIONAL_FACTS_KEYS = ("question",)
+_FACTS_PROTO_KEYS = _REQUIRED_FACTS_KEYS + _OPTIONAL_FACTS_KEYS
+_QUESTION_KEYS = ("min_length", "max_length")
+MIN_FACT_INTERVALS, MAX_FACT_INTERVALS = 1, 4
 
 
 def _is_ascii_digits(text):
@@ -156,6 +183,105 @@ def _parse_prototype(prototype):
     return opts
 
 
+def _parse_facts(raw):
+    """JSON-объект facts -> {имя: (левая граница, правая граница)}."""
+    try:
+        data = json.loads(raw)
+    except (TypeError, ValueError):
+        raise ParamError(
+            "facts: ожидается JSON-объект вида "
+            '{"P":[5,30],"Q":[14,23]}'
+        ) from None
+    if not isinstance(data, dict):
+        raise ParamError("facts: ожидается JSON-объект, получено %r" % (data,))
+    if not data:
+        raise ParamError("facts: нужен хотя бы один отрезок")
+    bad = [name for name in data if name not in FACT_NAMES]
+    if bad:
+        raise ParamError(
+            "facts: допустимы только %s; неизвестны: %s"
+            % (", ".join(FACT_NAMES), ", ".join(bad))
+        )
+    out = {}
+    for name, pair in data.items():
+        if not isinstance(pair, list) or len(pair) != 2:
+            raise ParamError(
+                "facts.%s: ожидается [левая; правая], получено %r"
+                % (name, pair)
+            )
+        lo, hi = pair
+        if (isinstance(lo, bool) or not isinstance(lo, int)
+                or isinstance(hi, bool) or not isinstance(hi, int)):
+            raise ParamError(
+                "facts.%s: границы должны быть целыми, получено %r"
+                % (name, pair)
+            )
+        if lo >= hi:
+            raise ParamError(
+                "facts.%s: левая граница должна быть меньше правой" % name
+            )
+        out[name] = (lo, hi)
+    return out
+
+
+def _parse_facts_prototype(prototype):
+    """Разбор prototype для task_logic; facts остаются заданными отрезками."""
+    if prototype is None:
+        return {}
+    if not isinstance(prototype, str):
+        raise ParamError("prototype должен быть строкой")
+    if len(prototype) > MAX_PROTOTYPE:
+        raise ParamError(f"prototype: длиннее {MAX_PROTOTYPE} символов")
+    if prototype == "":
+        return {}
+    opts = {}
+    for part in prototype.split(";"):
+        if not part:
+            raise ParamError("prototype: пустой фрагмент между ';'")
+        if part.count("=") != 1:
+            raise ParamError(f"prototype: ожидается key=value, получено {part!r}")
+        key, raw = part.split("=")
+        if not key:
+            raise ParamError("prototype: пустой ключ")
+        if key not in _FACTS_PROTO_KEYS:
+            raise ParamError(
+                "prototype: неизвестный параметр %r; допустимы: %s"
+                % (key, ", ".join(_FACTS_PROTO_KEYS))
+            )
+        if key in opts:
+            raise ParamError("prototype: параметр %r задан дважды" % key)
+        if not raw.strip():
+            raise ParamError("prototype: пустое значение параметра %r" % key)
+        opts[key] = raw
+    if "topics" in opts:
+        topics = [item.strip() for item in opts["topics"].split(",")]
+        if any(not item for item in topics):
+            raise ParamError("topics: пустая тема в списке")
+        if len(set(topics)) != len(topics):
+            raise ParamError("topics: темы не должны повторяться")
+        opts["topics"] = tuple(topics)
+    if "steps" in opts:
+        opts["steps"] = _parse_int("steps", opts["steps"], MIN_STEPS, MAX_STEPS)
+    if "intervals" in opts:
+        opts["intervals"] = _parse_int(
+            "intervals", opts["intervals"],
+            MIN_FACT_INTERVALS, MAX_FACT_INTERVALS,
+        )
+    if "seed" in opts:
+        opts["seed"] = _parse_seed(opts["seed"])
+    if "facts" in opts:
+        opts["facts"] = _parse_facts(opts["facts"])
+    if "question" in opts:
+        question = opts["question"].strip()
+        if question not in _QUESTION_KEYS:
+            raise ParamError(
+                "question: допустимы %s, получено %r"
+                % (", ".join(_QUESTION_KEYS), question)
+            )
+        opts["question"] = question
+    return opts
+
+
 def _check_topics(kinds, topics):
     """Проверяет, что темы допустимы хотя бы для одного из видов."""
     allowed = set()
@@ -223,6 +349,68 @@ def _line_one(kinds, prototype):
         "steps=%s, intervals=%s, seed=%r"
         % (MAX_ATTEMPTS, kinds, topics, steps, n_intervals, seed)
     )
+
+
+def _check_facts_topics(topics):
+    """Темы task_logic -- только темы задач на прямой."""
+    bad = [topic for topic in topics if topic not in LINE_TOPICS]
+    if bad:
+        raise ParamError(
+            "topics: недопустимы для задач на прямой: %s" % ", ".join(bad)
+        )
+
+
+def _check_facts(facts, n_intervals):
+    """Число отрезков проверяется до генерации.
+
+    Расположение P/Q (пересечение, вложенность в любую сторону или
+    непересечение) -- допустимые исходные данные, а не ошибка входа.
+    """
+    if len(facts) != n_intervals:
+        raise ParamError(
+            "intervals=%d не совпадает с числом отрезков в facts (%d)"
+            % (n_intervals, len(facts))
+        )
+
+
+def task_logic(prototype=None):
+    """Рекомендуемая точка входа: условие из facts и ответ на question.
+
+    Возвращает ровно ``{"condition": str, "answer": int}``. Сначала строятся
+    применимые внутренние условия по facts, затем вопрос
+    ``min_length``/``max_length`` фильтрует уже полученные варианты;
+    среди подходящих вариант выбирается детерминированно по seed. Если
+    вопрос не задан, вариант и вопрос выбираются по seed только среди
+    вопросов с конечным ответом.
+    """
+    opts = _parse_facts_prototype(prototype)
+    missing = [key for key in _REQUIRED_FACTS_KEYS if key not in opts]
+    if missing:
+        raise ParamError(
+            "task_logic: обязательны параметры %s; отсутствуют: %s"
+            % (", ".join(_REQUIRED_FACTS_KEYS), ", ".join(missing))
+        )
+    facts = opts["facts"]
+    topics = opts["topics"]
+    steps = opts["steps"]
+    n_intervals = opts["intervals"]
+    seed = opts["seed"]
+    question = opts.get("question")
+    _check_facts(facts, n_intervals)
+    _check_facts_topics(topics)
+    if steps < len(topics):
+        raise ParamError(
+            "steps=%d меньше числа явно заданных тем (%d)"
+            % (steps, len(topics))
+        )
+    try:
+        built = build_facts_task(
+            facts, topics, steps, seed, question=question,
+            tex=True, max_attempts=MAX_ATTEMPTS,
+        )
+    except ValueError as error:
+        raise ParamError(str(error)) from error
+    return {"condition": built.condition, "answer": int(built.answer)}
 
 
 def task_line_cover(prototype=None):

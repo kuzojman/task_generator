@@ -33,6 +33,16 @@ except ImportError:  # прямой запуск файлом, без пакет
         BIT_ONLY, TOPICS, Ctx, bit_leaf, bit_lit, line_lit, obfuscate, rand_h,
     )
 
+try:
+    from task_errors import BudgetError
+except ImportError:  # прямой запуск файлом, без пакетного импорта
+    import os
+    import sys
+    sys.path.insert(0, os.path.abspath(
+        os.path.join(os.path.dirname(__file__), "..", "..", "..")
+    ))
+    from task_errors import BudgetError
+
 
 # ============================================================ параметры и задачи
 @dataclass
@@ -71,6 +81,10 @@ class Task:
 def default_topics(kind):
     ts = list(TOPICS)
     return ts if kind.startswith("bit") else [t for t in ts if t not in BIT_ONLY]
+
+
+#: Темы, допустимые для задач на числовой прямой (без битовых тем).
+LINE_TOPICS = tuple(t for t in TOPICS if t not in BIT_ONLY)
 
 
 def pick_schedule(rnd, p, kind):
@@ -248,6 +262,266 @@ def line_task(kind, rnd, p, number, tex=False):
     lines += ["   " + x for x in fin]
     skeleton = (kind,) + tuple(law for hh in hists for law, _, _ in hh)
     return Task(number, kind, text, ans, lines, steps, list(dict.fromkeys(sched)), skeleton), None
+
+
+# ---------------------------------------------------------------- задачи из facts
+#: Допустимые имена фактов: P и Q -- только имена отрезков, без ролей границ A.
+FACT_NAMES = ("P", "Q")
+
+#: Вопросы, которые можно задать уже построенному условию.
+FACT_QUESTIONS = (("min_length", "min"), ("max_length", "max"))
+
+
+@dataclass
+class FactsTask:
+    """Условие, построенное по facts; вопросы применяются без пересборки.
+
+    `inner` -- множество, которое A обязан содержать; `outer` -- множество,
+    которого A не должен касаться. Конкретная пара inner/outer соответствует
+    одному из внутренних правил (I ⊆ A ⊆ U или U ⊆ A), а `answers` считаются
+    уже после принятия итоговой формулы.
+    """
+    intervals: dict
+    inner: frozenset
+    outer: frozenset
+    final: tuple
+    core: tuple
+    hist: list
+    steps: int
+    topics: tuple
+    schedule: list
+    line: Line
+    answers: dict
+    available: tuple
+    selected_question: str
+    tex: bool = True
+
+    def answer_for(self, question):
+        """Ответ на вопрос по уже построенному условию."""
+        if question not in self.answers:
+            raise ValueError(
+                "question=%s недоступен; доступны: %s"
+                % (question, ", ".join(self.available))
+            )
+        return int(self.answers[question])
+
+    def condition_for(self, question):
+        """Текст условия с формулировкой выбранного вопроса."""
+        if question not in self.answers:
+            raise ValueError(
+                "question=%s недоступен; доступны: %s"
+                % (question, ", ".join(self.available))
+            )
+        qual = "наименьшую" if question == "min_length" else "наибольшую"
+        word = {1: "один отрезок", 2: "два отрезка", 3: "три отрезка",
+                4: "четыре отрезка"}.get(len(self.intervals),
+                                         "%d отрезков" % len(self.intervals))
+        intro = ("На числовой прямой дан %s: " % word
+                 if len(self.intervals) == 1 else
+                 "На числовой прямой даны %s: " % word)
+        intro += (", ".join("%s = [%s; %s]" % (name, lo, hi)
+                            for name, (lo, hi) in self.intervals.items())
+                  + ".")
+        sep, pad = SEP[self.tex]
+        return (f"{intro} Укажите {qual} возможную длину такого отрезка A, "
+                f"что формула{sep}{pad}{fmt_formula(self.final, self.tex)}{sep}"
+                "тождественно истинна, то есть принимает значение 1 при любом "
+                "значении переменной x.")
+
+    @property
+    def condition(self):
+        return self.condition_for(self.selected_question)
+
+    @property
+    def answer(self):
+        return self.answer_for(self.selected_question)
+
+
+def _facts_formula(names, op):
+    """Формула пересечения/объединения всех facts через литералы x ∈ имя."""
+    nodes = [("in", name) for name in names]
+    if not nodes:
+        raise ValueError("facts: нужен хотя бы один отрезок")
+    node = nodes[0]
+    for other in nodes[1:]:
+        node = (op, node, other)
+    return node
+
+
+def _facts_rule_specs(intervals):
+    """Внутренние правила из facts: (Line, [(core, что A содержит, чего нельзя)]).
+
+    Имена P/Q -- только имена множеств. Пересечение, вложенность в любую
+    сторону и непересечение -- допустимые данные; здесь они не отбрасываются.
+    """
+    names = set(intervals)
+    if not names:
+        raise ValueError("facts: нужен хотя бы один отрезок")
+    unknown = names - set(FACT_NAMES)
+    if unknown:
+        raise ValueError(
+            "facts: допустимы только отрезки P и Q, получены: %s"
+            % ", ".join(sorted(unknown))
+        )
+
+    order = list(intervals)
+    line = Line(dict(intervals))
+    sets = [line.atom[name] for name in order]
+    intersection = sets[0].intersection(*sets[1:])
+    union = frozenset().union(*sets)
+
+    A = ("in", "A")
+    intersection_formula = _facts_formula(order, "and")
+    union_formula = _facts_formula(order, "or")
+    specs = []
+
+    if intersection:
+        # I ⊆ A ⊆ U: A обязан покрыть пересечение и не выйти за объединение.
+        core = ("and",
+                ("imp", intersection_formula, A),
+                ("imp", A, union_formula))
+        specs.append((core, intersection, line.all - union))
+
+    # U ⊆ A: A обязан покрыть объединение. Для непересекающихся facts
+    # формула остаётся объединением P/Q, а не одним отрезком через разрыв.
+    specs.append((("imp", union_formula, A), union, frozenset()))
+    return line, specs
+
+
+def facts_constraints(intervals):
+    """Совместимый доступ к первому правилу: (Line, что A содержит, чего нельзя)."""
+    line, specs = _facts_rule_specs(intervals)
+    _, inner, outer = specs[0]
+    return line, inner, outer
+
+
+def facts_core(intervals):
+    """Совместимый доступ к ядру первого правила до преобразований."""
+    _, specs = _facts_rule_specs(intervals)
+    return specs[0][0]
+
+
+def pick_facts_schedule(rnd, steps, topics):
+    """Ровно steps тем, причём каждая заказанная тема встречается хотя бы раз."""
+    topics = list(topics)
+    if not topics:
+        raise ValueError("topics: нужна хотя бы одна тема")
+    if steps < len(topics):
+        raise ValueError(
+            "steps=%d меньше числа явно заданных тем (%d)"
+            % (steps, len(topics))
+        )
+    sched = topics + [rnd.choice(topics) for _ in range(steps - len(topics))]
+    rnd.shuffle(sched)
+    return sched
+
+
+def _build_facts_candidate(line, core, inner, outer, intervals, topics, steps,
+                           seed, tex, max_attempts):
+    """Собрать один вариант условия и посчитать для него конечные вопросы."""
+    names = tuple(intervals)
+    rnd = random.Random(seed)
+    ctx = Ctx(rnd, lambda: line_lit(rnd, names))
+    last_why = None
+    for _ in range(max_attempts):
+        sched = pick_facts_schedule(rnd, steps, topics)
+        out, why = obfuscate(core, sched, ctx)
+        if out is None:
+            last_why = why
+            continue
+        final, hist = out
+        if len(hist) != steps:
+            last_why = "получилось не ровно steps преобразований"
+            continue
+        used = leaves(final)
+        if ("in", "A") not in used:
+            last_why = "A выпало из формулы"
+            continue
+        if any(("in", name) not in used for name in names):
+            last_why = "какой-то отрезок выпал из формулы"
+            continue
+        answers = {}
+        for q, want in FACT_QUESTIONS:
+            res = solve(line, inner, outer, want)
+            if res is None:
+                continue
+            ans, _, lo, hi = res
+            if not verify(line, lambda env: ev(final, env), lo, hi):
+                continue
+            answers[q] = int(ans)
+        available = tuple(q for q, _ in FACT_QUESTIONS if q in answers)
+        if not available:
+            last_why = "у условия нет конечного вопроса"
+            continue
+        return FactsTask(
+            intervals=dict(intervals), inner=inner, outer=outer, final=final,
+            core=core, hist=hist, steps=steps, topics=tuple(topics),
+            schedule=sched, line=line, answers=answers, available=available,
+            selected_question=available[0], tex=tex,
+        ), None
+    return None, last_why or "не удалось собрать вариант"
+
+
+def _build_facts_candidates(intervals, topics, steps, seed, tex=True,
+                            max_attempts=2000):
+    """Построить все применимые внутренние правила для одних и тех же facts."""
+    line, specs = _facts_rule_specs(intervals)
+    topics = tuple(topics)
+    candidates, reasons = [], []
+    for core, inner, outer in specs:
+        task, why = _build_facts_candidate(
+            line, core, inner, outer, intervals, topics, steps, seed, tex,
+            max_attempts,
+        )
+        if task is None:
+            reasons.append(why)
+        else:
+            candidates.append(task)
+    return candidates, reasons
+
+
+def build_facts_task(intervals, topics, steps, seed, question=None, tex=True,
+                     max_attempts=2000):
+    """Построить варианты из facts и выбрать подходящий под question.
+
+    Сначала строятся все применимые внутренние правила (I ⊆ A ⊆ U и U ⊆ A).
+    Затем question фильтрует уже полученные варианты: если у одного правила
+    нет максимума, запрос max_length может выбрать другое правило. Среди всех
+    подходящих вариантов выбор детерминированно распределяется по seed, без
+    предпочтения первого. Без question вариант и вопрос выбираются так же
+    детерминированно по seed. При исчерпании бюджета -- BudgetError.
+    """
+    candidates, reasons = _build_facts_candidates(
+        intervals, topics, steps, seed, tex=tex, max_attempts=max_attempts,
+    )
+    if not candidates:
+        raise BudgetError(
+            "не удалось построить условие по facts за %d попыток: facts=%s, "
+            "topics=%s, steps=%s, seed=%r; последняя причина: %s"
+            % (max_attempts, dict(intervals), tuple(topics), steps, seed,
+               reasons[-1] if reasons else "нет вариантов")
+        )
+
+    if question is not None:
+        suitable = [task for task in candidates if question in task.answers]
+        if not suitable:
+            available = []
+            for task in candidates:
+                for q in task.available:
+                    if q not in available:
+                        available.append(q)
+            raise ValueError(
+                "question=%s недоступен; доступны: %s"
+                % (question, ", ".join(available))
+            )
+        chosen = random.Random(seed).choice(suitable)
+        chosen.selected_question = question
+        return chosen
+
+    choices = [(task, q) for task in candidates for q in task.available]
+    chosen, selected = random.Random(seed).choice(choices)
+    chosen.selected_question = selected
+    return chosen
 
 
 # ---------------------------------------------------------------- виды 4-6: битовые операции
