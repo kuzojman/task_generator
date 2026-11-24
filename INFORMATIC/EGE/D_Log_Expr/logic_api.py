@@ -21,11 +21,19 @@ JSON как есть, поэтому обёртки возвращают ров�
 
     url=INFORMATIC.EGE.D_Log_Expr.logic_api||task_logic$$facts={"P":[5,30],"Q":[14,23]};topics=morgan,implication;steps=3;intervals=2;seed=1
 
-`task_logic` использует переданные отрезки как имена множеств (P и Q не
-закреплены за ролями границ A), строит по ним несколько внутренних условий
-(например, I ⊆ A ⊆ U и U ⊆ A), а затем применяет question уже к полученным
-вариантам. Старые `task_line_*`/`task_bits_*` продолжают работать с прежними
-сигнатурами.
+`task_logic` использует переданные отрезки как имена множеств: допустимы имена
+`P`, `Q`, `R`, `S`, `T`, `U` (от 1 до 6 фактов, роли границ A за именами не
+закреплены), строит по ним внутренние условия (для двух фактов -- прежний
+реестр схем, для трёх и более -- комбинаторные ядерные выражения), а затем
+применяет question уже к полученным вариантам. Старые
+`task_line_*`/`task_bits_*` продолжают работать с прежними сигнатурами и
+прежним диапазоном `intervals` 2..4.
+
+`task_divisibility` -- отдельная задача на делимость: после `$$` обязательны
+`a`, `topics`, `steps`, `seed`, а модули `b`, `c`, `d`, `e`, `f` (до шести
+чисел) и уточнения `scheme` (D1..D5, только для 1--2 модулей) и `question`
+(max_value/min_value) необязательны. Модули задаются подряд начиная с `a` и не
+повторяются; для 3..6 модулей схема строится деревом НОК/НОД.
 
 Условие берётся из `Task.text` -- без префикса «Задача N.», который добавляет
 `Task.statement()`.
@@ -56,16 +64,25 @@ except ImportError:  # прямой запуск файлом, без пакет
 
 try:
     from .logic_tasks import (
-        FACT_NAMES, LINE_TOPICS, TaskParams, build_facts_task, default_topics,
-        generate_tasks,
+        DIV_FACT_NAMES, FACT_NAMES, LINE_TOPICS, MAX_DIV_FACTS, TaskParams,
+        build_facts_task, default_topics, generate_tasks,
     )
 except ImportError:  # прямой запуск файлом, без пакетного импорта
     import os
     import sys
     sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
     from logic_tasks import (
-        FACT_NAMES, LINE_TOPICS, TaskParams, build_facts_task, default_topics,
-        generate_tasks,
+        DIV_FACT_NAMES, FACT_NAMES, LINE_TOPICS, MAX_DIV_FACTS, TaskParams,
+        build_facts_task, default_topics, generate_tasks,
+    )
+
+try:
+    from .logic_div import (
+        DIV_TOPICS, MAX_MODULUS, MIN_MODULUS, build_div_task,
+    )
+except ImportError:  # прямой запуск файлом, без пакетного импорта
+    from logic_div import (
+        DIV_TOPICS, MAX_MODULUS, MIN_MODULUS, build_div_task,
     )
 
 
@@ -97,8 +114,12 @@ _PROTO_KEYS = _REQUIRED_LINE_KEYS
 _REQUIRED_FACTS_KEYS = ("facts", "topics", "steps", "intervals", "seed")
 _OPTIONAL_FACTS_KEYS = ("question",)
 _FACTS_PROTO_KEYS = _REQUIRED_FACTS_KEYS + _OPTIONAL_FACTS_KEYS
-_QUESTION_KEYS = ("min_length", "max_length")
-MIN_FACT_INTERVALS, MAX_FACT_INTERVALS = 1, 4
+_QUESTION_KEYS = ("min_length", "max_length", "min_value", "max_value")
+#: Вопросы про число A допустимы только в гибридных facts (с ДЕЛ(x, m)).
+_QUESTION_DIV_ONLY = ("min_value", "max_value")
+#: facts -- от одного до шести отрезков P..U; MIN_INTERVALS/MAX_INTERVALS
+#: по-прежнему относятся только к старым task_line_* (2..4).
+MIN_FACT_INTERVALS, MAX_FACT_INTERVALS = 1, 6
 
 
 def _is_ascii_digits(text):
@@ -184,26 +205,51 @@ def _parse_prototype(prototype):
 
 
 def _parse_facts(raw):
-    """JSON-объект facts -> {имя: (левая граница, правая граница)}."""
+    """JSON-объект facts -> {имя: (lo, hi)} для отрезков и {ключ: m} для ДЕЛ.
+
+    Ключи ``P..U`` -- отрезки ``[lo; hi]`` (lo < hi), ключи ``a..f`` и ``D1..D6``
+    -- модули ``ДЕЛ(x, m)`` из 2..999. Делители допустимы только вместе хотя бы
+    с одним отрезком; при их наличии границы отрезков натуральны (lo >= 1),
+    модули не повторяются, а их не больше шести.
+    """
     try:
         data = json.loads(raw)
     except (TypeError, ValueError):
         raise ParamError(
             "facts: ожидается JSON-объект вида "
-            '{"P":[5,30],"Q":[14,23]}'
+            '{"P":[5,30],"Q":[14,23]} или {"P":[10,55],"a":6,"b":4}'
         ) from None
     if not isinstance(data, dict):
         raise ParamError("facts: ожидается JSON-объект, получено %r" % (data,))
     if not data:
         raise ParamError("facts: нужен хотя бы один отрезок")
-    bad = [name for name in data if name not in FACT_NAMES]
+    bad = [
+        name for name in data
+        if name not in FACT_NAMES and name not in DIV_FACT_NAMES
+    ]
     if bad:
         raise ParamError(
-            "facts: допустимы только %s; неизвестны: %s"
-            % (", ".join(FACT_NAMES), ", ".join(bad))
+            "facts: допустимы %s и делители %s; неизвестны: %s"
+            % (", ".join(FACT_NAMES), ", ".join(DIV_FACT_NAMES),
+               ", ".join(bad))
         )
-    out = {}
+    has_div = any(name in DIV_FACT_NAMES for name in data)
+    out, moduli = {}, []
     for name, pair in data.items():
+        if name in DIV_FACT_NAMES:
+            if isinstance(pair, bool) or not isinstance(pair, int):
+                raise ParamError(
+                    "facts.%s: ожидается целое число-делитель, получено %r"
+                    % (name, pair)
+                )
+            if not MIN_MODULUS <= pair <= MAX_MODULUS:
+                raise ParamError(
+                    "facts.%s: делитель должен быть от %d до %d, получено %d"
+                    % (name, MIN_MODULUS, MAX_MODULUS, pair)
+                )
+            moduli.append(pair)
+            out[name] = pair
+            continue
         if not isinstance(pair, list) or len(pair) != 2:
             raise ParamError(
                 "facts.%s: ожидается [левая; правая], получено %r"
@@ -220,7 +266,23 @@ def _parse_facts(raw):
             raise ParamError(
                 "facts.%s: левая граница должна быть меньше правой" % name
             )
+        if has_div and lo < 1:
+            raise ParamError(
+                "facts.%s: при наличии делителей левая граница должна быть "
+                "не меньше 1" % name
+            )
         out[name] = (lo, hi)
+    if has_div:
+        if len(moduli) != len(set(moduli)):
+            raise ParamError(
+                "facts: делители не должны повторяться, получено %s"
+                % ", ".join(str(m) for m in moduli)
+            )
+        if len(moduli) > MAX_DIV_FACTS:
+            raise ParamError(
+                "facts: делителей не больше %d, получено %d"
+                % (MAX_DIV_FACTS, len(moduli))
+            )
     return out
 
 
@@ -278,6 +340,101 @@ def _parse_facts_prototype(prototype):
                 "question: допустимы %s, получено %r"
                 % (", ".join(_QUESTION_KEYS), question)
             )
+        if "facts" in opts and question in _QUESTION_DIV_ONLY:
+            has_div = any(name in DIV_FACT_NAMES for name in opts["facts"])
+            if not has_div:
+                raise ParamError(
+                    "question=%s допустим только при наличии делителей "
+                    "(a..f или D1..D6) в facts" % question
+                )
+        opts["question"] = question
+    return opts
+
+
+#: Ключи модулей task_divisibility: до шести чисел a..f.
+DIV_MODULUS_KEYS = ("a", "b", "c", "d", "e", "f")
+
+#: Обязательные ключи prototype для task_divisibility.
+_REQUIRED_DIV_KEYS = ("a", "topics", "steps", "seed")
+
+#: Необязательные ключи prototype для task_divisibility: модули b..f и уточнения.
+_OPTIONAL_DIV_KEYS = ("b", "c", "d", "e", "f", "scheme", "question")
+
+
+def _parse_div_prototype(prototype):
+    """Разбор prototype для task_divisibility.
+
+    Обязательны ``a``, ``topics``, ``steps`` и ``seed``; ``b``, ``c``, ``d``,
+    ``e``, ``f``, ``scheme`` и ``question`` -- необязательные уточнения. Модули
+    задаются подряд начиная с ``a``: ``a`` и ``c`` без ``b`` -- ошибка. Формат
+    тот же, что у task_logic: пары key=value через ';', ровно один '=' в паре.
+    """
+    required = _REQUIRED_DIV_KEYS
+    optional = _OPTIONAL_DIV_KEYS
+    keys = required + optional
+    questions = ("max_value", "min_value")
+    schemes = ("D1", "D2", "D3", "D4", "D5")
+    if prototype is None:
+        return {}
+    if not isinstance(prototype, str):
+        raise ParamError("prototype должен быть строкой")
+    if len(prototype) > MAX_PROTOTYPE:
+        raise ParamError(f"prototype: длиннее {MAX_PROTOTYPE} символов")
+    if prototype == "":
+        return {}
+    opts = {}
+    for part in prototype.split(";"):
+        if not part:
+            raise ParamError("prototype: пустой фрагмент между ';'")
+        if part.count("=") != 1:
+            raise ParamError(f"prototype: ожидается key=value, получено {part!r}")
+        key, raw = part.split("=")
+        if not key:
+            raise ParamError("prototype: пустой ключ")
+        if key not in keys:
+            raise ParamError(
+                "prototype: неизвестный параметр %r; допустимы: %s"
+                % (key, ", ".join(keys))
+            )
+        if key in opts:
+            raise ParamError("prototype: параметр %r задан дважды" % key)
+        if not raw.strip():
+            raise ParamError("prototype: пустое значение параметра %r" % key)
+        opts[key] = raw
+    if "topics" in opts:
+        topics = [item.strip() for item in opts["topics"].split(",")]
+        if any(not item for item in topics):
+            raise ParamError("topics: пустая тема в списке")
+        if len(set(topics)) != len(topics):
+            raise ParamError("topics: темы не должны повторяться")
+        opts["topics"] = tuple(topics)
+    for key in DIV_MODULUS_KEYS:
+        if key in opts:
+            opts[key] = _parse_int(key, opts[key], MIN_MODULUS, MAX_MODULUS)
+    present = [key for key in DIV_MODULUS_KEYS if key in opts]
+    if present:
+        last = DIV_MODULUS_KEYS.index(present[-1])
+        for key in DIV_MODULUS_KEYS[:last]:
+            if key not in opts:
+                raise ParamError(
+                    "prototype: модули должны задаваться подряд начиная с a, "
+                    "пропущен %r" % key
+                )
+    if "steps" in opts:
+        opts["steps"] = _parse_int("steps", opts["steps"], MIN_STEPS, MAX_STEPS)
+    if "seed" in opts:
+        opts["seed"] = _parse_seed(opts["seed"])
+    if "scheme" in opts:
+        scheme = opts["scheme"].strip()
+        if scheme not in schemes:
+            raise ParamError("scheme: допустимы %s, получено %r"
+                             % (", ".join(schemes), scheme))
+        opts["scheme"] = scheme
+    if "question" in opts:
+        question = opts["question"].strip()
+        if question not in questions:
+            raise ParamError("question: допустимы %s, получено %r"
+                             % (", ".join(questions), question))
         opts["question"] = question
     return opts
 
@@ -363,13 +520,25 @@ def _check_facts_topics(topics):
 def _check_facts(facts, n_intervals):
     """Число отрезков проверяется до генерации.
 
-    Расположение P/Q (пересечение, вложенность в любую сторону или
-    непересечение) -- допустимые исходные данные, а не ошибка входа.
+    Расположение фактов P..U (пересечение, вложенность в любую сторону или
+    непересечение) -- допустимые исходные данные, а не ошибка входа. При
+    наличии делителей ``intervals`` может совпадать либо с числом отрезков,
+    либо с общим числом фактов.
     """
-    if len(facts) != n_intervals:
+    n_div = sum(1 for name in facts if name in DIV_FACT_NAMES)
+    if not n_div:
+        if len(facts) != n_intervals:
+            raise ParamError(
+                "intervals=%d не совпадает с числом отрезков в facts (%d)"
+                % (n_intervals, len(facts))
+            )
+        return
+    n_segments = len(facts) - n_div
+    if n_intervals not in (n_segments, len(facts)):
         raise ParamError(
-            "intervals=%d не совпадает с числом отрезков в facts (%d)"
-            % (n_intervals, len(facts))
+            "intervals=%d не совпадает ни с числом отрезков в facts (%d), "
+            "ни с общим числом фактов (%d)"
+            % (n_intervals, n_segments, len(facts))
         )
 
 
@@ -406,6 +575,65 @@ def task_logic(prototype=None):
     try:
         built = build_facts_task(
             facts, topics, steps, seed, question=question,
+            tex=True, max_attempts=MAX_ATTEMPTS,
+        )
+    except ValueError as error:
+        raise ParamError(str(error)) from error
+    return {"condition": built.condition, "answer": int(built.answer)}
+
+
+def _check_div_topics(topics):
+    """Темы task_divisibility -- логические темы без битовых."""
+    bad = [topic for topic in topics if topic not in DIV_TOPICS]
+    if bad:
+        raise ParamError(
+            "topics: недопустимы для задач на делимость: %s" % ", ".join(bad)
+        )
+
+
+def task_divisibility(prototype=None):
+    """Условие на делимость: ДЕЛ(x, m) и ответ на max_value/min_value.
+
+    Возвращает ровно ``{"condition": str, "answer": int}``. Обязательны ``a``,
+    ``topics``, ``steps`` и ``seed``; ``b``..``f`` -- остальные модули (подряд,
+    без пропусков и повторов), ``scheme`` (D1..D5, только для 1--2 модулей) и
+    ``question`` (max_value/min_value) -- необязательные уточнения. Например::
+
+        url=INFORMATIC.EGE.D_Log_Expr.logic_api||task_divisibility$$a=6;b=4;topics=morgan,implication;steps=3;seed=1
+
+    Модули ``a``..``f`` -- из 2..999; в двухфактных схемах ни один не делит
+    другой, НОК(a, b) <= 2520, у D5 НОД > 1. Для 3..6 модулей схема строится
+    деревом НОК/НОД, период НОК(moduli) не больше 10080, и каждый модуль должен
+    влиять на ответ. Несовместимый вход -- ParamError, исчерпанный бюджет --
+    BudgetError.
+    """
+    opts = _parse_div_prototype(prototype)
+    required = _REQUIRED_DIV_KEYS
+    missing = [key for key in required if key not in opts]
+    if missing:
+        raise ParamError(
+            "task_divisibility: обязательны параметры %s; отсутствуют: %s"
+            % (", ".join(required), ", ".join(missing))
+        )
+    moduli = tuple(opts[key] for key in DIV_MODULUS_KEYS if key in opts)
+    if len(set(moduli)) != len(moduli):
+        raise ParamError(
+            "moduli: модули не должны повторяться, получено %s"
+            % ", ".join(str(m) for m in moduli)
+        )
+    topics = opts["topics"]
+    steps = opts["steps"]
+    seed = opts["seed"]
+    _check_div_topics(topics)
+    if steps < len(topics):
+        raise ParamError(
+            "steps=%d меньше числа явно заданных тем (%d)"
+            % (steps, len(topics))
+        )
+    try:
+        built = build_div_task(
+            moduli, topics=topics, steps=steps, seed=seed,
+            scheme=opts.get("scheme"), question=opts.get("question"),
             tex=True, max_attempts=MAX_ATTEMPTS,
         )
     except ValueError as error:

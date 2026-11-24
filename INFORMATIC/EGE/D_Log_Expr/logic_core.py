@@ -55,6 +55,13 @@ register_op("band", lambda a, b: a & b, "&", "int", True, True)
 register_op("bor", lambda a, b: a | b, "|", "int", True, True)
 register_op("bxor", lambda a, b: a ^ b, "^", "int", True, True)
 
+# ДЕЛ(x, m) -- «x делится на m». Это узел, а не лист: ev/size/subterms/replace/
+# leaves/negate работают без правок, а печать задаётся в show/show_tex.
+# Оператор намеренно не добавляется в INFIX/TEX_INFIX (иначе получилось бы
+# «x ⋮ 6»); m > 0 защищает перебор envs, где A принимает значение 0.
+OPS["div"] = lambda x, m: m > 0 and x % m == 0
+TYPE["div"] = "bool"
+
 
 def is_bool(f):
     return TYPE.get(f[0]) == "bool"
@@ -101,6 +108,8 @@ def show(f):
         if b[0] == "nz":
             return cmp0(b[1]) + " = 0"
         return "¬" + wrap(b)
+    if k == "div":
+        return f"ДЕЛ({show(f[1])}, {show(f[2])})"
     if k in INFIX:
         return f"{wrap(f[1])} {INFIX[k]} {wrap(f[2])}"
     return str(f)
@@ -149,6 +158,8 @@ def show_tex(f):
         if b[0] == "nz":
             return cmp0_tex(b[1]) + " = 0"
         return r"\neg " + wrap_tex(b)
+    if k == "div":
+        return (r"\text{ДЕЛ}(" + show_tex(f[1]) + ", " + show_tex(f[2]) + ")")
     if k in TEX_INFIX:
         return f"{wrap_tex(f[1])} {TEX_INFIX[k]} {wrap_tex(f[2])}"
     return str(f)
